@@ -1,0 +1,62 @@
+<!doctype html>
+<html $if(lang)$ lang="$lang$" $endif$>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="generator" content="pandoc" />
+    <!--  author -->
+    <meta name="author" content="$author$" />
+    <!--  date -->
+    <meta name="date" content="$date$" />
+    <!--  title -->
+    <title>$title$</title>
+    <!--  网站图标 -->
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <!--  css -->
+    $for(css)$
+    <link rel="stylesheet" href="$css$" /> $endfor$
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!--  js  -->
+    <script src="https://cdn.bootcss.com/jquery/3.1.1/jquery.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <!--[if lt IE 9]>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+
+        </header>
+        <main class="content" role="main">
+            <!--  博客 -->
+            <article class="post">
+                <!--  博客标题 -->
+                <header id="title">
+                    <h1>$title$</h1>
+                    <small>$date$</small>
+                </header>
+                <!--  博客正文 -->
+                $body$
+            </article>
+            <!-- 评论 -->
+            <article class="comment">
+
+            </article>
+        </main>
+        <div class='aside-right'>
+            <a href="https://github.com/Homebrew/brew/"><img id="forkme" src="https://aral.github.com/fork-me-on-github-retina-ribbons/right-grey@2x.png" alt="Fork me on GitHub"></a>
+        </div>
+    </div>
+    <footer class="bottom cp">
+        <p>Copyright © 2017 $author$. </p>
+    </footer>
+</body>
+
+</html>
