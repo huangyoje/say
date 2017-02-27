@@ -1,7 +1,6 @@
 ---
 title: 'pandoc  使用'
 date: 2017-02-15
-abstract: pandoc usage
 ...
 
 ## what is pandoc

@@ -1,12 +1,4 @@
-html,
-body{
-  width: 100%;
-  height: 100%;
-}
-
-.container{
-  display: table-row;
-  width: 100%;
+html {
   height: 100%;
 }
 
@@ -19,24 +11,28 @@ body {
   line-height: 2.0;
 }
 
+
+/*********************             container            *******************/
+.container{
+  margin: 0 auto;
+  max-width: 1150px;
+  height: 100%;
+}
+/* 控制水平或垂直布局 */
 .container .header,
-.container .content,
-.container .aside-right{
+.container .content {
   display: table-cell;
   vertical-align: top;
+  height: 100%;
 }
 
+
+/************************************ blog ******************************/
 .container .content{
   width: auto;
+  padding-left: 35px;
+  padding-right: 25px;
   position:relative;
-}
-
-.container .header{
-  width: 400px;
-}
-
-.container .aside-right{
-  width: 150px;
 }
 
 .container .content:before{
@@ -51,21 +47,102 @@ body {
   border-right: 1px solid rgba(255,255,255,0.08);
 }
 
-.container .content:after{
+/************************************ index ******************************/
+.container .content .bloglist {
+  list-style: none;
+  margin: 30px 0;
+}
+.container .content .bloglist .blog {
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.container .content .bloglist .blog header a {
+  text-align: center;
+  color:inherit;
+}
+.container .content .bloglist .blog .abstract {
+
+}
+
+
+/********************************** header *******************************/
+.container .header{
+  width: 200px;
+  padding-top: 50px;
+  text-align: center;
+}
+
+.container .header .avatar,
+.container .header .menu,
+.container .header .feed,
+.container .header .contact {
+  position: relative;
+}
+.container .header .avatar {
+  height: 200px;
+}
+.container .header .avatar .avatar-desc {
+  margin: 10px 0 10px;
+  font-family: cursive;
+  font-size: 22px;
+}
+.container .header .menu,
+.container .header .feed,
+.container .header .contact {
+  height: 50px;
+  padding: 10px;
+}
+
+.container .header .avatar::after,
+.container .header .menu::after,
+.container .header .feed::after,
+.container .header .contact::after  {
   content: ' ';
   position: absolute;
   z-index: 999;
   right: 0;
-  top: 0;
-  height: 100%;
-  width: 0;
-  border-right: 1px solid rgba(0,0,0,0.5);
-  border-left: 1px solid rgba(255,255,255,0.08);
+  left: 0;
+  bottom: 0;
+  top: 100%;
+  height: 0;
+  width: 200px;
+  border-bottom: 1px solid rgba(0,0,0,0.5);
+  border-top: 1px solid rgba(255,255,255,0.08);
 }
 
-a {
-  color: #00B7FF;
+
+.menu .menu-item {
+  display: inline-block;
+  margin: 0 25px;
 }
+
+.menu .menu-item .menu-item-link,
+.contact .contact-link,
+.feed .feed-link {
+  color: rgba(247, 225, 204, 0.91);
+}
+
+.feed .feed-link {
+  margin: 0 50px;
+  display: block;
+}
+
+/* contact */
+.contact-link {
+  margin: 5px 5px;
+}
+.contact-link .fa-fw {
+  width: 30px !important;
+}
+
+.menu .menu-item a:hover,
+.contact a:hover,
+.feed a:hover {
+  color: #fff;
+  text-decoration: none
+}
+
+
+
 
 pre {
   background: rgba(0,0,0,0.3);
@@ -96,6 +173,9 @@ q {
     quotes: "“" "”" "‘" "’";
 }
 
+
+
+
 #title {
   text-align: center;
 }
@@ -122,6 +202,20 @@ q {
   border: 0
 }
 
-.container .content{
-    padding: 0 25px;
+
+/*************************    字体     *************************/
+h1, h2, h3, h4, h5, h6{
+  font-family: monospace;
+}
+
+
+/*************************    链接     *************************/
+a {
+  color: #d9edf7;
+  text-decoration: none;
+  cursor: pointer;
+}
+a:hover {
+  color: #fff;
+  text-decoration: none
 }
