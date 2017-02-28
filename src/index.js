@@ -1,3 +1,5 @@
+"use strict";
+
 // 生成index.html
 let cheerio = require('cheerio');
 let fs = require('fs');
@@ -7,11 +9,11 @@ let sprintf = require("sprintf-js").sprintf;
 //
 var baseDir = process.cwd();
 
-// target 目录
-var targetDir = path.join(baseDir, "target");
+// docs 目录
+var targetDir = path.join(baseDir, "docs");
 // index 页面目录
 var indexTemplateDir = path.join(baseDir, "config/templates/index.html");
-var indexDir = path.join(baseDir, "public/index.html");
+var indexDir = path.join(baseDir, "docs/index.html");
 // 博客列表<li>...</li>标签
 var blogLiElem = '<li>' +
               '  <article class="blog ">' +
