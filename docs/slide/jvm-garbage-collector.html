@@ -1,0 +1,917 @@
+<!doctype html>
+<html lang="zh">
+
+<head>
+	<meta charset="utf-8">
+	<title>g1-gc</title>
+	<meta name="description" content="jvm-gc">
+	<meta name="author" content="yoje">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<!-- <link rel="stylesheet" href="../css/reveal.css"> -->
+	<link href="https://cdn.bootcss.com/reveal.js/3.6.0/css/reveal.min.css" rel="stylesheet">
+	<!-- <link rel="stylesheet" href="../css/theme/black.css" id="theme"> -->
+	<link href="https://cdn.bootcss.com/reveal.js/3.6.0/css/theme/black.min.css" rel="stylesheet">
+	<!-- Theme used for syntax highlighting of code -->
+	<!-- <link rel="stylesheet" href="../lib/css/zenburn.css"> -->
+	<link href="https://cdn.bootcss.com/reveal.js/3.6.0/lib/css/zenburn.min.css" rel="stylesheet">
+	<!-- <link href="https://cdn.bootcss.com/reveal.js/3.6.0/css/print/paper.min.css" rel="stylesheet"> -->
+	<!-- Printing and PDF exports -->
+	<script>
+		var link = document.createElement('link');
+		link.rel = 'stylesheet';
+		link.type = 'text/css';
+		link.href = window.location.search.match(/print-pdf/gi) ? 'https://cdn.bootcss.com/reveal.js/3.6.0/css/print/pdf.min.css' : 'https://cdn.bootcss.com/reveal.js/3.6.0/css/print/paper.min.css';
+		document.getElementsByTagName('head')[0].appendChild(link);
+	</script>
+	<link href="https://afeld.github.io/emoji-css/emoji.css" rel="stylesheet">
+
+	<style>
+		h1,
+		h2,
+		h3,
+		h4,
+		h5,
+		h6 {
+			text-transform: none !important;
+			font-family: fantasy !important;
+		}
+
+		.reveal{
+			font-family: cursive !important;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="reveal">
+		<div class="slides ">
+			<section>
+				<h1>garbage collector & g1</h1>
+				<p style="font-family:fantasy;">Created by <a href="yoje.com">yoje</a>&nbsp;<i class="em em-beers"></i></p>
+			</section>
+			<section>
+				<h2>基本概念</h2>
+				<ul>
+					<li>并行<br>&nbsp;&nbsp;&nbsp;&nbsp;多个gc线程同时工作</li>
+					<li>并发<br>&nbsp;&nbsp;&nbsp;&nbsp;gc线程和应用线程同时工作</li>
+					<li>mutator<br>&nbsp;&nbsp;&nbsp;&nbsp;应用线程</li>
+					<li>collector<br>&nbsp;&nbsp;&nbsp;&nbsp;gc线程</li>
+				</ul>
+			</section>
+			<section>
+				<h2>gc overview</h2>
+				<img data-src="../img/gc-overview.png" alt="gc overview" style="max-width:80%;max-height:80%"><br>
+				<ul>
+					<li>红色: mutator暂停</li>
+					<li>绿色: mutator和collector并发执行</li>
+				</ul>
+			</section>
+			<section>
+				<section>
+					<h2>generational garbage collection</h2>
+					<p>1.2 and later JVMs<br>
+						<a href="https://www.ibm.com/developerworks/library/j-jtp11253/index.html">https://www.ibm.com/developerworks/library/j-jtp11253/index.html</a>
+					</p>
+				</section>
+				<section>
+					<h2>weak generational hypothesis</h2>
+					<ul>
+						<li>
+							<p>Most objects die young</p>
+						</li>
+						<li>
+							<P>Few references from older to younger objects exist</P>
+						</li>
+					</ul>
+				</section>
+				<section>
+					<h2>weak generational hypothesis</h2>
+					<pre>
+<code data-trim data-noescape>
+public class LRUCache {
+
+    static int size = 20;
+    final static LinkedHashMap<String, Object> cache = new LinkedHashMap<String, Object>(size, 0.75f, true) {
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<String, Object> eldest) {
+            return size() > size;
+        }
+    };
+}
+</code></pre>
+					<p>假设不成立 &nbsp;&nbsp;<i class="em-svg em-weary"></i></p>
+				</section>
+				<section>
+					<h2>generational problem</h2>
+					<img data-src="../img/gen-gc-1.png" alt="">
+				</section>
+				<section>
+					<h2>generational problem</h2>
+					<img data-src="../img/gen-gc-2-card-table.png" alt="" style="max-width:50%;max-height:50%">
+				</section>
+				<section>
+					<h2>card table marking overhead</h2>
+					<ul>
+						<li>write barrier</li>
+						<li>false sharing<br><a href="https://blogs.oracle.com/dave/false-sharing-induced-by-card-table-marking">https://blogs.oracle.com/dave/false-sharing-induced-by-card-table-marking</a></li>
+					</ul>
+				</section>
+				<section>
+					<h2>card table false sharing</h2>
+					<pre class="stretch"><code data-trim data-noescape class="java">
+	public class CardTableTest {
+
+	    class Worker extends Thread {
+	        String[] array = new String[10];
+					// 512*64/8 = 4096
+	        // Long[] longs = new Long[4096];
+	        int times;
+
+	        public Worker(int times) {
+	            this.times = times;
+	        }
+
+	        public void run() {
+	            String[] arr = array;
+	            int i = 0;
+	            int pos = 5;
+	            String v = new String("hello");
+	            while (i < times) {
+	                if (i % 2 == 0) {
+	                    arr[pos] = v;
+	                    pos += 1;
+	                } else {
+	                    pos -= 1;
+	                    v = arr[pos];
+	                }
+	                i++;
+	            }
+	        }
+	    }
+
+	    public static void main(String[] args) {
+	        if (args == null || args.length != 3) {
+	            throw new IllegalArgumentException("java CardTableTest size parrelLevel count");
+	        }
+	        int size = Integer.parseInt(args[0]);
+	        int parrelLevel = Integer.parseInt(args[1]);
+	        int count = Integer.parseInt(args[2]);
+
+	        ArrayList<Long> measurements = new ArrayList<>();
+	        CardTableTest cardTableTest = new CardTableTest();
+	        for (int i = 0; i < count; i++) {
+	            long start = System.currentTimeMillis();
+	            cardTableTest.run(size, parrelLevel);
+	            measurements.add(System.currentTimeMillis() - start);
+	            System.gc();
+	        }
+	        System.out.println("running times: " + measurements);
+	    }
+
+	    public void run(int size, int parrelLevel) {
+	        int sz = size / parrelLevel;
+	        ArrayList<Thread> threads = new ArrayList<>();
+	        for (int i = 0; i < parrelLevel; i++) {
+	            threads.add(new Worker(sz));
+	            threads.get(i).start();
+	        }
+	        for (int i = 0; i < parrelLevel; i++) {
+	            try {
+	                threads.get(i).join();
+	            } catch (Exception e) {
+	            }
+	        }
+	    }
+	}
+	</code></pre>
+				</section>
+				<section>
+					<h2>card table false sharing</h2>
+					<p>
+						<pre>java -Xms6g -Xmx8g -verbose:gc CardTableTest 2000000000 16 5</pre>
+						<p><pre>[3476, 3747, 3656, 3640, 3624]</pre></p><br>
+						<pre>
+Performance counter stats for 'java -Xms6g -Xmx8g -verbose:gc CardTableTest 2000000000 16 5':
+
+   763,664,255,859 cycles                    #    0.000 GHz
+   227,677,199,912 instructions              #    0.30  insns per cycle
+       362,191,392 cache-references
+       116,709,511 cache-misses              #   32.223 % of all cache refs
+
+      18.283154995 seconds time elapsed
+							</pre>
+					</p>
+				</section>
+				<section>
+					<h2>card table false sharing</h2>
+					<p>-XX:+UseCondCardMark</p>
+					<p>
+						<pre>java -Xms6g -Xmx8g -server -XX:+UseCondCardMark -verbose:gc CardTableTest 2000000000 16 5</pre>
+						<p><pre>[539, 501, 482, 413, 524]</pre></p><br>
+						<pre>
+Performance counter stats for 'java -Xms6g -Xmx8g -server -XX:+UseCondCardMark -verbose:gc CardTableTest 2000000000 16 5':
+
+   90,277,605,999 cycles                    #    0.000 GHz
+  228,703,103,293 instructions              #    2.53  insns per cycle
+       17,228,645 cache-references
+        5,844,582 cache-misses              #   33.924 % of all cache refs
+
+      2.599485701 seconds time elapsed
+							</pre>
+					</p>
+				</section>
+				<section>
+					<h2>card table false sharing</h2>
+					<p>what about G1 &nbsp;<i class="em em-thinking_face"></i></p>
+					<p>
+						<pre>java -Xms6g -Xmx8g -server -XX:+UseG1GC -verbose:gc CardTableTest 2000000000 16 5</pre>
+						<p><pre>[791, 651, 688, 753, 682]</pre></p><br>
+						<pre>
+Performance counter stats for 'java -Xms6g -Xmx8g -server -XX:+UseG1GC -verbose:gc CardTableTest 2000000000 16 5':
+
+   127,719,248,924 cycles                    #    0.000 GHz
+   330,058,457,870 instructions              #    2.58  insns per cycle
+        30,994,044 cache-references
+        14,993,870 cache-misses              #   48.377 % of all cache refs
+
+       3.930423917 seconds time elapsed
+							</pre>
+					</p>
+				</section>
+				<section>
+					<h2>card table false sharing</h2>
+					<table>
+						<thead>
+							<th></th>
+							<th>cycles</th>
+							<th>instructions</th>
+							<th>cache-references</th>
+							<th>cache-misses</th>
+							<th>time(s)</th>
+						</thead>
+						<tbody>
+							<tr>
+								<td>ParallelScavenge</td>
+								<td>763,664,255,859</td>
+								<td>227,677,199,912</td>
+								<td>362,191,392</td>
+								<td>116,709,511</td>
+								<td>18.283154995</td>
+							</tr>
+							<tr>
+								<td>UseCondCardMark</td>
+								<td>90,277,605,999</td>
+								<td>228,703,103,293</td>
+								<td>17,228,645</td>
+								<td>5,844,582</td>
+								<td>2.599485701</td>
+							</tr>
+							<tr>
+								<td>G1</td>
+								<td>127,719,248,924</td>
+								<td>330,058,457,870</td>
+								<td>30,994,044</td>
+								<td>14,993,870</td>
+								<td>3.930423917</td>
+							</tr>
+						</tbody>
+					</table>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h2>concurrent mark problem</h2>
+					<img data-src="../img/3-color-mark-1.png" alt="" style="max-width:30%;max-height:30%">
+					<br>
+					<p>某一时刻的对象图</p>
+					<p>使用3色标记法进行标记活对象</p>
+				</section>
+				<section>
+					<h2>concurrent mark problem</h2>
+					<p>Three-Color Abstraction</p>
+					<ul>
+						<li>White: not ye visited</li>
+						<li>Gray: visited, but references are not scanned yet</li>
+						<li>Black: visited, and fully scanned</li>
+					</ul>
+				</section>
+				<section>
+					<h2>concurrent mark problem</h2>
+					<img data-src="../img/3-color-mark-2.png" alt="" style="max-width:30%;max-height:30%">
+				</section>
+				<section>
+					<h2>concurrent mark problem</h2>
+					<img data-src="../img/3-color-mark-3.png" alt="" style="max-width:30%;max-height:30%">
+				</section>
+				<section>
+					<h2>concurrent mark problem</h2>
+					<img data-src="../img/3-color-mark-4.png" alt="" style="max-width:30%;max-height:30%">
+				</section>
+				<section>
+					<h2>concurrent mark problem</h2>
+					<img data-src="../img/3-color-mark-5.png" alt="" style="max-width:30%;max-height:30%">
+					<br>
+					<ul>
+						<li>一个并发的mutator线程创建新对象H, 并且让A对象引用H</li>
+						<li>一个并发的mutator线程删除了C到G的引用, 并且通过对象A引用G</li>
+						<li>由于A对象已经被标记为黑色, 不会再被处理, 因此对象H, G都将不会被标记</li>
+					</ul>
+				</section>
+				<section>
+					<h2>concurrent mark problem</h2>
+					<img data-src="../img/3-color-mark-6.png" alt="" style="max-width:30%;max-height:30%">
+					<br>
+					<ul>
+						<li>H, G其实是活对象, 但标记结束之后却是白色, 被gc掉</li>
+						<li>crash &nbsp; <i class="em em-angry"></i></li>
+					</ul>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h2>g1 gc</h2>
+					<p>regionalized</p>
+					<p>soft pause time</p>
+					<p>5% footprint overhead</p>
+
+					<p><strong>-XX:MaxGCPauseMillis</strong></p>
+				</section>
+				<section>
+					<h2>memory layout</h2>
+					<img data-src="../img/memory-layout.png" alt="region layout">
+					<br>
+					<ul>
+						<li>-XX:G1HeapRegionSize=nm</li>
+						<li>n: 1m-32m</li>
+					</ul>
+				</section>
+				<section>
+					<h2>CSet(collection set)</h2>
+					<p style="margin-top:0px;">进行垃圾回收时, 由需要被回收的region组成的集合</p>
+					<ul>
+						<li>young gc<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cset包含所有young generation的region<br>
+							<pre>
+G1Ergonomics (CSet Construction) finish choosing CSet, eden: 1231 regions,
+survivors: 10 regions, old: 0 regions
+</pre>
+						</li>
+						<li>mixed gc<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cset包含所有young generation的region, 以及部分old genereaion的region<br>
+							<pre>
+G1Ergonomics (CSet Construction) finish choosing CSet, eden: 149 regions,
+survivors: 11 regions, old: 56 regions
+								</pre>
+						</li>
+					</ul>
+					<p style="margin-top:-20px;color:greenyellow">通过动态调整CSet的大小控制暂停时间</p>
+				</section>
+				<section>
+					<h2>concurrent mark</h2>
+					<ul>
+						<li>目的:<br>
+							<p>找出old generation中可以被回收的region</p>
+						</li>
+						<li>什么时候执行<br>
+							<p>一次ygc之后, 堆内存的占用超过阈值</p>
+						</li>
+						<li>可以被回收<br>
+							<p>垃圾超过某个阈值的region</p>
+						</li>
+						<li>标记结束后, 开始一个mixed gc周期(多次mixed gc)</li>
+					</ul>
+				</section>
+				<section>
+					<h2>RSet(remember set)</h2>
+					<p>在部分垃圾回收器中(如分代垃圾回收器), RSet是用于维护非收集部分对收集部分的引用的数据结构. 避免全堆扫描.</p>
+					<p>G1 会维护:</p>
+					<ul>
+						<li>老年代对年轻代的引用</li>
+						<li>老年代对老年代的引用</li>
+					</ul>
+				</section>
+				<section>
+					<h2>RSet(remember set)</h2>
+					<img data-src="../img/g1-rset-1.png" alt="" style="max-width:30%;max-height:30%">
+				</section>
+				<section>
+					<h2>RSet(remember set)</h2>
+					<img data-src="../img/g1-rset-2.png" alt="" style="max-width:30%;max-height:30%">
+				</section>
+				<section>
+					<h2>post write barrier</h2>
+					<pre style="margin-top:-20px;"><code>
+void oop_field_store(oop* field, oop new_value) {
+	// 修改引用操作
+  *field = new_value;
+	// 通过post write barrier维护更新RSet
+	// 记录跨region的引用, 加入dirty card queue(remembered set log).
+  post_write_barrier(field, new_value);
+}
+</code></pre>
+					<ul>
+						<li>每个线程都有自己的dirty card queue, 满了之后放置到全局列表中, 并且给当前线程分配一个新的dirty card queue</li>
+						<li>全局列表中的dirty card queues会被G1ConcRefinementThread并发处理, 线程数量由 -XX:G1ConcRefinementThreads控制</li>
+						<li>当进行gc时, 没有来得及被G1ConcRefinementThread线程处理的dirty card queue 会被gc工作线程处理</li>
+					</ul>
+				</section>
+				<section>
+					<h2>RSet(remember set)</h2>
+					<pre style="margin-top:-20px;"><code>
+void oop_field_store(oop* field, oop new_value) {
+	// 修改引用操作
+  *field = new_value;
+	// 通过post write barrier维护更新RSet
+	// 记录跨region的引用, 加入dirty card queue(remembered set log).
+  post_write_barrier(field, new_value);
+}
+</code></pre>
+					<pre>
+[Update RS (ms):  20.0  20.0  20.0  20.0  18.6  20.0  20.0  20.1
+  Min: 18.6, Avg: 20.0, Max: 20.6, Diff: 2.0, Sum: 359.6]
+	   // 这里的buffer就是dirty card queue
+    [Processed Buffers:  88  120  126  111  127  94  83  81
+     Min: 66, Avg: 104.6, Max: 162, Diff: 96, Sum: 1882]</pre>
+				</section>
+				<section>
+					<h2>RSet(remember set)</h2>
+					<p>控制Update RS占用的时间</p>
+					<p>-XX:G1RSetUpdatingPauseTimePercent</p>
+					<p>减少gc期间花费在update rs上面的时间,意味着把更多的工作交给了G1ConcRefinementThread线程</p>
+					<ul>
+						<li>增加了并发开销</li>
+						<li>如果G1ConcRefinementThread线程来不及处理, 则mutator线程会介入</li>
+					</ul>
+				</section>
+				<section>
+					<h2>RSet(remember set)</h2>
+					<p>RSet的粒度影响遍历时间</p>
+					<pre>
+[Scan RS (ms):  6.7  6.6  6.6  6.6  6.6  6.7  6.6  6.6
+       Min: 6.1, Avg: 6.6, Max: 6.7, Diff: 0.6, Sum: 118.9]
+</pre>
+					<p>-XX:G1SummarizeRSetStats</p>
+					查看RSet 统计信息: 粒度, G1ConcRefinementThread线程处理的数量, mutator线程处理的数量, coarsenings, RSet处理时间.
+				</section>
+				<section>
+					<h2>SATB(snapshot-at-the-beginning)</h2>
+					<img data-src="../img/3-color-mark-5.png" alt="" style="max-width:30%;max-height:30%">
+				</section>
+				<section>
+					<h2>SATB(snapshot-at-the-beginning)</h2>
+					<img data-src="../img/3-color-mark-satb-7.png" alt="" style="max-width:30%;max-height:30%">
+					<br>
+					<ul>
+						<li>color all new object black</li>
+						<li>color all updated referents gray</li>
+					</ul>
+				</section>
+				<section>
+					<h2>SATB(snapshot-at-the-beginning)</h2>
+					<img data-src="../img/3-color-mark-satb-8.png" alt="" style="max-width:30%;max-height:30%">
+					<br>
+					<p>Everything is ok</p>
+				</section>
+				<section>
+					<h2>SATB(snapshot-at-the-beginning)</h2>
+					<img data-src="../img/satb-mark-1.png" alt="" style="max-width:30%;max-height:30%;float:left;">
+					<div class="satb-mark-1-desc" style="max-width:800px;display:inline-block;">
+						<ul>
+							<li>top是当前region的分配指针</li>
+							<li>[bottom, top)是当前该region已用的部分</li>
+							<li>[top, end)当前region的可分配空间</li>
+							<li>[bottom, PTAMS)是上一轮concurrent mark进行标记的空间, 对象存活信息存储在previous bitmap中</li>
+							<li>[PTAMS, top)是上一轮concurrent mark结束后, 到当前时刻新分配的对象</li>
+						</ul>
+					</div>
+				</section>
+				<section>
+					<h2>SATB(snapshot-at-the-beginning)</h2>
+					<img data-src="../img/satb-mark-2.png" alt="" style="max-width:30%;max-height:30%">
+					<br>
+					<ul>
+						<li>开始本轮标记, 设置NTAMS=top </li>
+						<li>标记出当前时刻所有的存活对象,如果当前存活的对象在标记期间死掉,在这轮标记里也认为是存活对象</li>
+						<li>从当前时刻到标记结束期间, 新创建的对象认为是存活的</li>
+					</ul>
+				</section>
+				<section>
+					<h2>SATB(snapshot-at-the-beginning)</h2>
+					<img data-src="../img/satb-mark-3.png" alt="" style="max-width:30%;max-height:30%">
+					<br>
+					<ul>
+						<li>标记过程中,mutator也在并发运行,新分配的对象位于[NTAMS,top)</li>
+					</ul>
+				</section>
+				<section>
+					<h2>pre write barrier</h2>
+					<pre><code>
+void oop_field_store(oop* field, oop new_value) {
+	// concurrent mark期间, 维护引用的修改
+	// 将引用修改记录在 satb buffer中
+	pre_write_barrier(field);
+	// 修改引用操作
+  *field = new_value;
+}
+</code></pre>
+				</section>
+				<section>
+					<h2>SATB(snapshot-at-the-beginning)</h2>
+					<img data-src="../img/satb-mark-4.png" alt="" style="max-width:30%;max-height:30%">
+					<br>
+				</section>
+				<section>
+					<h2>SATB(snapshot-at-the-beginning)</h2>
+					<img data-src="../img/satb-mark-5.png" alt="" style="max-width:30%;max-height:30%">
+					<br>
+				</section>
+				<section>
+					<h2>write barrier</h2>
+					<pre><code>
+void oop_field_store(oop* field, oop new_value) {
+	// concurrent mark期间, 维护引用的修改
+	// 将引用修改记录在 satb buffer中
+	pre_write_barrier(field);
+	// 修改引用操作
+  *field = new_value;
+	// 通过post write barrier维护更新RSet
+	// 记录跨region的引用, 加入dirty card queue(remembered set log).
+  post_write_barrier(field, new_value);
+}
+</code></pre>
+					<a href="https://www.jfokus.se/jfokus17/preso/Write-Barriers-in-Garbage-First-Garbage-Collector.pdf">https://www.jfokus.se/jfokus17/preso/Write-Barriers-in-Garbage-First-Garbage-Collector.pdf</a>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h2>g1 gc humongous</h2>
+					<img data-src="../img/humongous.png" alt="region layout">
+				</section>
+				<section>
+					<h2>g1 gc humongous</h2>
+					<ul>
+						<li>分配不走TLAB, 频繁创建巨型对象性能低</li>
+						<li>需要连续的region, 内存碎片严重, 容易引发full gc</li>
+						<li>短命巨型对象,回收效率低,jdk8u40+可以在ygc期间回收</li>
+					</ul>
+				</section>
+				<section>
+					<h2>g1 gc humongous</h2>
+					<p>查找大对象</p>
+					<a href="http://gitlab.corp.qunar.com/yongjie.huang/awesome_atpco/blob/master/btrace/BigArraySize.java">http://gitlab.corp.qunar.com/yongjie.huang/awesome_atpco/blob/master/btrace/BigArraySize.java</a>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h2>g1 gc tuning</h2>
+				</section>
+				<section>
+					<h2>young gc</h2>
+					<ul>
+						<li>-XX:MaxGCPauseMillis=200</li>
+						<li>-XX:G1NewSizePercent=5</li>
+						<li>-XX:G1MaxNewSizePercent=60</li>
+					</ul>
+					<p style="color:red">-Xmn, -XX:NewRatio NO!</p>
+				</section>
+				<section>
+					<h2>concurrent mark</h2>
+					<ul>
+						<li>-XX:InitiatingHeapOccupancyPercent<br>
+							<p>开始并发标记周期的堆内存占用阈值. 默认45<br> 设置太高会导致old区回收不及时, 可能导致full gc. 设置太低会导致很多无意义的并发标记周期,降低系统吞吐量.
+							</p>
+						</li>
+					</ul>
+				</section>
+				<section>
+					<h2>mixed gc</h2>
+					<ul>
+						<li>-XX:G1MixedLiveThresholdPercent<br>
+							<p>old region上的存活对象占比小于该值,则该region可以被回收. 默认85.</p>
+						</li>
+						<li>-XX:G1HeapWastePercent<br>
+							<p>可以容忍的垃圾占堆内存的占比. 如果垃圾超过该值, 则开始mixed gc周期. 默认10.</p>
+						</li>
+						<li>-XX:G1MixedGCCountTarget<br>
+							<p>一个mixed gc周期里mixed gc的最大次数. 默认8.</p>
+						</li>
+						<li>-XX:G1OldCSetRegionThresholdPercent<br>
+							<p>一次mixed gc的cset中可以包含的old region占堆内存的最大占比. 默认10.</p>
+						</li>
+					</ul>
+				</section>
+				<section>
+					<h2>to-space-exhausted</h2>
+					<p>-XX:G1ReservePercent</p>
+				</section>
+				<section>
+					<h2>others</h2>
+					<ul>
+						<li>-XX:ParallelGCThreads</li>
+						<li>-XX:ConcGCThreads</li>
+						<li>-XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=10 -XX:GCLogFileSize=50M</li>
+					</ul>
+					<br><br>
+					<a href="https://github.com/chewiebug/GCViewer">https://github.com/chewiebug/GCViewer</a>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h2>System.gc()</h2>
+					<pre>
+Calling this method suggests that the Java virtual machine expend
+effort toward recycling unused objects in order to make the memory
+they currently occupy available for quick reuse. When control
+returns from the method call, the virtual machine has made
+its best effort to recycle all discarded objects.
+						</pre>
+					<ul>
+						<li>java语言规范并不保证可以回收掉当前时刻的垃圾</li>
+						<li>默认行为和当前使用的garbage collector有关</li>
+						<li>可以使用jvm参数改变默认行为</li>
+					</ul>
+				</section>
+				<section>
+					<h2>System.gc()</h2>
+					<ul>
+						<li>Parallel Garbage Collector<br>
+							<p>kick off a full gc</p>
+						</li>
+						<li>CMS Garbage Collector<br>
+							<p>???</p>
+						</li>
+						<li>G1 Garbage Collector<br>
+							<p>kick off a full gc</p>
+						</li>
+					</ul>
+				</section>
+				<section>
+					<h2>System.gc()</h2>
+					<p style="margin-top:0px;"><strong>behavior</strong></p>
+					<ul style="line-height:10px;">
+						<li>-XX:+DisableExplicitGC<br>
+							<p>do nothing</p>
+						</li>
+						<li>-XX:+ExplicitGCInvokesConcurrent<br>
+							<p>initiate a G1 concurrent cycle</p>
+							<p>works with cms, g1</p>
+						</li>
+						<li>-XX:+ExplicitGCInvokesConcurrentAndUnloadsClasses<br>
+							<p>initiate a G1 concurrent cycle, unload unused classes</p>
+							<p>works with cms, g1(?)</p>
+						</li>
+						<li>jdk8u40+, g1 automatically unload classes after completing a concurrent mark cycle<br>
+							<a href="https://bugs.openjdk.java.net/browse/JDK-8049579">https://bugs.openjdk.java.net/browse/JDK-8049579</a>
+						</li>
+					</ul>
+				</section>
+				<section>
+					<h2>System.gc()</h2>
+					<p>who use it?</p>
+					<ul>
+						<li>direct buffer</li>
+						<li>rmi</li>
+					</ul>
+				</section>
+				<section>
+					<h2>System.gc()</h2>
+					<p style="margin-top:0px;">DirectByteBuffer</p>
+					<pre><code data-noescape>
+public static ByteBuffer allocateDirect(int capacity) {
+        <font color="red">return new DirectByteBuffer(capacity)</font>;
+    }
+DirectByteBuffer(int cap) {                   // package-private
+    super(-1, 0, cap, cap);
+    boolean pa = VM.isDirectMemoryPageAligned();
+    int ps = Bits.pageSize();
+    long size = Math.max(1L, (long)cap + (pa ? ps : 0));
+    <font color="red">Bits.reserveMemory(size, cap)</font>;
+		...
+}
+static void reserveMemory(long size, int cap) {
+      if (!memoryLimitSet && VM.isBooted()) {
+          maxMemory = VM.maxDirectMemory();
+          memoryLimitSet = true;
+      }
+      // optimist!
+      if (tryReserveMemory(size, cap)) {
+          return;
+      }
+      ...
+      // trigger VM's Reference processing
+      <font color="red">System.gc()</font>;
+      ...
+}</code></pre>
+				</section>
+				<section>
+					<h2>System.gc()</h2>
+					<img data-src="../img/direct-buffer-1.png" alt="" style="max-width:30%;max-height:30%">
+					<br>
+					<ul>
+						<li>申请两个direct buffer 对象</li>
+						<li>只有位于java heap的direct buffer对象被
+							<font color="red">recycle</font>时, 背后关联的native memory才可以被释放</li>
+					</ul>
+				</section>
+				<section>
+					<h2>System.gc()</h2>
+					<img data-src="../img/direct-buffer-2.png" alt="" style="max-width:30%;max-height:30%">
+					<br>
+					<p>before gc</p>
+					<ul>
+						<li>对象A死亡,下次ygc期间会被recycle</li>
+						<li>对象B存活</li>
+					</ul>
+				</section>
+				<section>
+					<h2>System.gc()</h2>
+					<img data-src="../img/direct-buffer-3.png" alt="" style="max-width:30%;max-height:30%">
+					<br>
+					<p>after gc</p>
+					<ul>
+						<li>对象A被recycle, 背后关联的native memroy被释放</li>
+						<li>对象B存活, 并且晋升到old generation</li>
+					</ul>
+				</section>
+				<section>
+					<h2>System.gc()</h2>
+					<img data-src="../img/direct-buffer-4.png" alt="" style="max-width:30%;max-height:30%">
+					<ul style="margin-left:90px;">
+						<li>
+							<p>经过一段时间后,对象B死亡 </p>
+						</li>
+						<li>
+							<p>但是基于弱分代假设, old generation gc 频率非常低</p>
+						</li>
+						<li>
+							<p>因此对象B不能被
+								<font color="red">及时recycle</font>
+							</p>
+						</li>
+						<li>
+							<p>背后关联的native memory也无法及时释放</p>
+						</li>
+						<li>
+							<p>如果old generation 有很多对象B. -> Direct buffer OOM.</p>
+						</li>
+					</ul>
+				</section>
+				<section>
+					<h2>System.gc()</h2>
+					<p>default behavior in G1</p>
+					<a href="https://bugs.openjdk.java.net/browse/JDK-8160392">https://bugs.openjdk.java.net/browse/JDK-8160392</a>
+				</section>
+				<section>
+					<h2>System.gc()</h2>
+					<ul>
+						<li>如果不能控制jvm参数,避免使用 System.gc()<br>
+							<ul>
+								<li>无法保证具体的行为</li>
+							</ul>
+						</li>
+						<br>
+						<li>避免使用 -XX:+DisableExplicitGC <br>
+							<ul>
+								<li>parallel gc<br> oom vs full gc</li>
+								<li>g1 gc<br> oom vs full gc or concurrent mark cycle</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h2>jdk7 vs jdk8</h2>
+					<ul>
+						<li>从jdk7开始, Permanent Generation逐步被移除, 但是依然存在,并且所有的garbage collector都在使用</li>
+						<li>jdk8引入Metaspace</li>
+					</ul>
+					<ul>
+						<li>The required size of permgen was hard to predict. It resulted in either under-provisioning triggering java.lang.OutOfMemoryError: Permgen size errors or over-provisioning resulting in wasted resources.</li>
+						<li>GC performance improvements, enabling concurrent class data de-allocation without GC pauses and specific iterators on metadata</li>
+						<li>Support for further optimizations such as G1 concurrent class unloading</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Permanent Generation</h2>
+					<p>jdk7只移除了部分位于PermGen的东西</p>
+					<ul>
+						<li>Symbols were moved to the native heap</li>
+						<li>Interned strings were moved to the Java Heap</li>
+						<li>Class statics were moved to the Java Heap</li>
+					</ul>
+					<br><br><br>
+					<a href="https://bugs.openjdk.java.net/browse/JDK-6964458">https://bugs.openjdk.java.net/browse/JDK-6964458</a>
+				</section>
+				<section>
+					<h2>Permanent Generation and GC</h2>
+					<p>-XX:PermSize -XX:MaxPermSize</p>
+					<ul>
+						<li>G1<br>
+							<p>collected only at Full GC</p>
+						</li>
+						<li>CMS<br>
+							<p>-XX:+CMSClassUnloadingEnabled</p>
+							<p>collect PermGen space in the CMS concurrent cycle</p>
+						</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Metaspace</h2>
+					<p>In JDK 8, classes metadata is now stored in the native heap and this space is called Metaspace.</p>
+					<p>By default class metadata allocation is only limited by the amount of available native memory.</p>
+				</section>
+				<section>
+					<h2>Metaspace</h2>
+					<ul>
+						<li>-XX:MetaspaceSize=NNN<br> 初始化空间大小,单位byte.
+						</li>
+						<li>-XX:MaxMetaspaceSize=NNN<br> 最大空间大小,单位byte.默认无限大.
+						</li>
+						<li>-XX:MinMetaspaceFreeRatio<br>
+						</li>
+						<li>-XX:MaxMetaspaceFreeRatio<br>
+						</li>
+					</ul>
+				</section>
+				<section>
+					<h2>jdk7 vs jdk8</h2>
+					<a href="https://blogs.oracle.com/poonam/about-g1-garbage-collector%2c-permanent-generation-and-metaspace">https://blogs.oracle.com/poonam/about-g1-garbage-collector%2c-permanent-generation-and-metaspace</a>
+				</section>
+			</section>
+			<!-- <section>
+				<h2>Export to PDF</h2>
+				<p>Presentations can be <a href="https://github.com/hakimel/reveal.js#pdf-export">exported to PDF</a>, here's an example:</p>
+				<iframe data-src="https://www.slideshare.net/slideshow/embed_code/42840540" width="445" height="355" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:3px solid #666; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe>
+			</section>
+
+			<section style="text-align: left;">
+				<h1>THE END</h1>
+				<p>
+					- <a href="http://slides.com">Try the online editor</a> <br> - <a href="https://github.com/hakimel/reveal.js">Source code &amp; documentation</a>
+				</p>
+			</section> -->
+		</div>
+	</div>
+	<script src="https://cdn.bootcss.com/reveal.js/3.6.0/lib/js/head.min.js"></script>
+	<script src="https://cdn.bootcss.com/reveal.js/3.6.0/js/reveal.min.js"></script>
+	<script>
+		// More info https://github.com/hakimel/reveal.js#configuration
+		Reveal.initialize({
+			controls: true,
+			progress: true,
+			history: false,
+			center: true,
+
+			transition: 'fade', // none/fade/slide/convex/concave/zoom
+
+			width: 960,
+			height: 700,
+
+			// Factor of the display size that should remain empty around the content
+			margin: 0.1,
+
+			// Bounds for smallest/largest possible scale to apply to content
+			minScale: 0.2,
+			maxScale: 1.5,
+			// More info https://github.com/hakimel/reveal.js#dependencies
+			dependencies: [{
+					src: 'https://cdn.bootcss.com/reveal.js/3.5.0/lib/js/classList.js',
+					condition: function() {
+						return !document.body.classList;
+					}
+				},
+				{
+					src: 'https://cdn.bootcss.com/reveal.js/3.5.0/plugin/markdown/marked.js',
+					condition: function() {
+						return !!document.querySelector('[data-markdown]');
+					}
+				},
+				{
+					src: 'https://cdn.bootcss.com/reveal.js/3.5.0/plugin/markdown/markdown.js',
+					condition: function() {
+						return !!document.querySelector('[data-markdown]');
+					}
+				},
+				{
+					src: 'https://cdn.bootcss.com/reveal.js/3.5.0/plugin/highlight/highlight.js',
+					async: true,
+					callback: function() {
+						hljs.initHighlightingOnLoad();
+					}
+				},
+				{
+					src: 'https://cdn.bootcss.com/reveal.js/3.5.0/plugin/zoom-js/zoom.min.js',
+					async: true
+				},
+				{
+					src: 'https://cdn.bootcss.com/reveal.js/3.5.0/plugin/notes/notes.min.js',
+					async: true
+				}
+			]
+		});
+	</script>
+</body>
+
+</html>
