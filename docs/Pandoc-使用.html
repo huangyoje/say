@@ -11,8 +11,8 @@
     <meta name="date" content="2017-02-15" />     <!--  title -->
     <title>pandoc 使用</title>
     <!--  网站图标 -->
-    <link rel="shortcut icon" href="/favicon.ico" type="../img/x-icon">
-    <link rel="icon" href="favicon.ico" type="../img/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <!--  css -->
         <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
@@ -33,7 +33,7 @@
     <div class="container">
         <header class="header ">
             <div class="avatar ">
-                <img src="img/header.jpeg" class="img-circle" alt="no img" width="150px " height="150px ">
+                <img src="image/header.jpeg" class="img-circle" alt="no img" width="150px " height="150px ">
                 <p class="avatar-desc">boma ye</p>
             </div>
             <div class="menu ">
@@ -65,8 +65,7 @@
                 <!--  博客正文 -->
                 <h2 id="what-is-pandoc">what is pandoc</h2>
                 <p><a href="https://github.com/jgm/pandoc">pandoc</a> 用于将一种标记语言的文本转化为另一种标记语言格式。如将markdown转化为html, pdf等。 <code>pandoc</code> 是一个命令行工具,使用 <a href="https://www.haskell.org/">HasKell</a> 语言编写。<br />
-                👉<a href="http://pandoc.org/index.html">感受下目前支持的可以互相转化的标记语言</a><br />
-                是不是应该好好学习一门标记语言，一门静态语言，一门动态语言...😋</p>
+                👉<a href="http://pandoc.org/index.html">感受下目前支持的可以互相转化的标记语言</a></p>
                 <h2 id="安装">安装</h2>
                 <p><a href="https://github.com/jgm/pandoc/blob/master/INSTALL.md" class="uri">https://github.com/jgm/pandoc/blob/master/INSTALL.md</a></p>
                 <h2 id="使用">使用</h2>
@@ -84,30 +83,40 @@
                 <p>可以根据本地文件路径或url指定，可以传入多个文件，空格分开<br />
                 如果不传该参数，表示接受标准输入</p>
                 <h2 id="支持的格式">支持的格式</h2>
-                <p>markdown , html4, html5, pdf...</p>
+                <p>markdown , html4, html5, pdf…</p>
                 <h2 id="示例">示例</h2>
                 <ol type="1">
-                <li><p>md to html5</p>
-                <div class="sourceCode"><pre class="sourceCode zsh"><code class="sourceCode zsh">pandoc -s --template=./config/templates/default.html5 -f markdown -t html5 -o ./target/pandoc.html ./articles/pandoc.md</code></pre></div></li>
-                <li><p>字符集 pandoc 支持的字符编码为utf-8, 如果输入文件或输出文件非utf-8, 则使用 <code>iconv</code> 命令转化，如下</p>
-                <div class="sourceCode"><pre class="sourceCode zsh"><code class="sourceCode zsh">iconv -t utf-8 input.txt <span class="kw">|</span> pandoc <span class="kw">|</span> iconv -f utf-8</code></pre></div></li>
+                <li>md to html5</li>
                 </ol>
+                <div class="sourceCode" id="cb1"><pre class="sourceCode zsh"><code class="sourceCode zsh"><a class="sourceLine" id="cb1-1" data-line-number="1">pandoc -s --template=./config/templates/default.html5 -f markdown -t html5 -o ./target/pandoc.html ./articles/pandoc.md</a></code></pre></div>
+                <ol start="2" type="1">
+                <li>字符集 pandoc 支持的字符编码为utf-8, 如果输入文件或输出文件非utf-8, 则使用 <code>iconv</code> 命令转化，如下</li>
+                </ol>
+                <div class="sourceCode" id="cb2"><pre class="sourceCode zsh"><code class="sourceCode zsh"><a class="sourceLine" id="cb2-1" data-line-number="1">iconv -t utf-8 input.txt <span class="kw">|</span> pandoc <span class="kw">|</span> iconv -f utf-8</a></code></pre></div>
                 <h2 id="进阶">进阶</h2>
                 <ol type="1">
-                <li><p>查看支持高亮的语言</p>
-                <div class="sourceCode"><pre class="sourceCode zsh"><code class="sourceCode zsh">pandoc --list-highlight-languages</code></pre></div></li>
-                <li><p>查看支持的高亮的样式</p>
-                <div class="sourceCode"><pre class="sourceCode zsh"><code class="sourceCode zsh">pandoc --list-highlight-styles</code></pre></div></li>
-                <li><p>选择高亮的样式</p>
-                <div class="sourceCode"><pre class="sourceCode zsh"><code class="sourceCode zsh"><span class="co"># 可选的有tango,espresso,zenburn,breezedark,haddock,monochrome,pygments(默认使用)</span>
-                pandoc --highlight-style=monochrome</code></pre></div></li>
-                <li><p>禁用高亮</p>
-                <div class="sourceCode"><pre class="sourceCode zsh"><code class="sourceCode zsh">pandoc --no-highlight</code></pre></div></li>
-                <li><p>查看pandoc对markdown支持的扩展</p>
-                <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="co"># 使用某种扩展, markdown+extensionname</span>
-                <span class="co"># 禁用某种扩展, markdown-extensionname</span>
-                <span class="ex">pandoc</span> --list-extensions</code></pre></div></li>
+                <li>查看支持高亮的语言</li>
                 </ol>
+                <div class="sourceCode" id="cb3"><pre class="sourceCode zsh"><code class="sourceCode zsh"><a class="sourceLine" id="cb3-1" data-line-number="1">pandoc --list-highlight-languages</a></code></pre></div>
+                <ol start="2" type="1">
+                <li>查看支持的高亮的样式</li>
+                </ol>
+                <div class="sourceCode" id="cb4"><pre class="sourceCode zsh"><code class="sourceCode zsh"><a class="sourceLine" id="cb4-1" data-line-number="1">pandoc --list-highlight-stylesb</a></code></pre></div>
+                <ol start="3" type="1">
+                <li>选择高亮的样式</li>
+                </ol>
+                <div class="sourceCode" id="cb5"><pre class="sourceCode zsh"><code class="sourceCode zsh"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># 可选的有tango,espresso,zenburn,breezedark,haddock,monochrome,pygments(默认使用)</span></a>
+                <a class="sourceLine" id="cb5-2" data-line-number="2">pandoc --highlight-style=monochrome</a></code></pre></div>
+                <ol start="4" type="1">
+                <li>禁用高亮</li>
+                </ol>
+                <div class="sourceCode" id="cb6"><pre class="sourceCode zsh"><code class="sourceCode zsh"><a class="sourceLine" id="cb6-1" data-line-number="1">pandoc --no-highlight</a></code></pre></div>
+                <ol start="5" type="1">
+                <li>查看pandoc对markdown支持的扩展</li>
+                </ol>
+                <div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="co"># 使用某种扩展, markdown+extensionname</span></a>
+                <a class="sourceLine" id="cb7-2" data-line-number="2"><span class="co"># 禁用某种扩展, markdown-extensionname</span></a>
+                <a class="sourceLine" id="cb7-3" data-line-number="3"><span class="ex">pandoc</span> --list-extensions</a></code></pre></div>
             </article>
             <!-- 评论 -->
             <article class="comment ">
