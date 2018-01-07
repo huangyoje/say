@@ -46,7 +46,7 @@ pandoc --list-highlight-languages
 
 2. 查看支持的高亮的样式
 ```zsh
-pandoc --list-highlight-styles
+pandoc --list-highlight-stylesb
 ```
 
 3. 选择高亮的样式

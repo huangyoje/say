@@ -137,25 +137,3 @@ consumer在dubbo-rpc中生成要发送的数据后，通过调用client.send(mes
 
 ##### 交互
 `Protocol`, `Exporter`, `Invoker`.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-对方的身份
-1. isGeneric()是什么？
-2. 每个接口的意义，定义的方法
