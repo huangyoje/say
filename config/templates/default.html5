@@ -38,7 +38,7 @@
     <div class="container">
         <header class="header ">
             <div class="avatar ">
-                <img src="image/header.jpeg" class="img-circle" alt="no img" width="150px " height="150px ">
+                <img src="http://oscbgsllb.bkt.clouddn.com/me.jpg" class="img-circle" alt="where ma i" width="150px " height="150px ">
                 <p class="avatar-desc">boma ye</p>
             </div>
             <div class="menu ">
@@ -84,25 +84,6 @@
     <footer class="bottom cp ">
         <p>Copyright © 2017 $author$ </p>
     </footer>
-
-
-    <!-- 多说评论框 end -->
-    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-    <script type="text/javascript">
-        var duoshuoQuery = {
-            short_name: "yoje"
-        };
-        (function() {
-            var ds = document.createElement('script');
-            ds.type = 'text/javascript';
-            ds.async = true;
-            ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-            ds.charset = 'UTF-8';
-            (document.getElementsByTagName('head')[0] ||
-                document.getElementsByTagName('body')[0]).appendChild(ds);
-        })();
-    </script>
-    <!-- 多说公共JS代码 end -->
 
 </body>
 
