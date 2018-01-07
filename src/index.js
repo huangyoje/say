@@ -29,7 +29,13 @@ var blogLiElem = '<li>' +
 
 // 列出所有的博客,并且根据日期排序
 function allBlos(){
-  return fs.readdirSync(targetDir);
+  return fs.readdirSync(targetDir).filter(function(item){
+    return isBlog(item);
+  });
+}
+
+function isBlog(filename) {
+  return filename.endsWith('.html') && filename !== 'index.html';
 }
 
 // 获取博客标题
@@ -86,11 +92,15 @@ function renderBlogItems(blogItems){
   blogItems.forEach(function (item){
     blogLiElems.push(sprintf(blogLiElem, item));
   })
+  blogLiElems.forEach(function (i){
+    console.log(i);
+  })
   return blogLiElems.join("<br>");
 }
 
 // 生成index 页面
 function createIndex(){
+  console.log('start create index');
   var blogItems = getBlogItems();
   // 获取index页面模版
   var index_$ = cheerio.load(fs.readFileSync(indexTemplateDir), { decodeEntities: false });
