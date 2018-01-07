@@ -3,6 +3,6 @@
 var index = require("../src/index");
 
 
-// index.createIndex();
+index.createIndex();
 
 console.log('hello');
