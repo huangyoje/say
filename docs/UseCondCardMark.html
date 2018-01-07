@@ -175,26 +175,26 @@
                 <h4 id="xx-usecondcardmark">1. -XX:-UseCondCardMark</h4>
                 <p><code>sudo perf stat -ecycles,instructions,cache-references,cache-misses java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc  -XX:-UseCondCardMark CardTableTest 2000000000 8 5</code></p>
                 <pre><code>running times: [3668, 3820, 3527, 3623, 2456]
-                
+
                  Performance counter stats for &#39;java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc -XX:-UseCondCardMark CardTableTest 2000000000 8 5&#39;:
-                
+
                    380,627,593,591 cycles                    #    0.000 GHz
                    216,449,367,675 instructions              #    0.57  insns per cycle
                        344,499,146 cache-references
                        137,509,095 cache-misses              #   39.916 % of all cache refs
-                
+
                       17.163011340 seconds time elapsed</code></pre>
                 <h4 id="xxusecondcardmark-1">2. -XX:+UseCondCardMark</h4>
                 <p><code>sudo perf stat -ecycles,instructions,cache-references,cache-misses java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc  -XX:+UseCondCardMark CardTableTest 2000000000 8 5</code></p>
                 <pre><code>running times: [590, 574, 564, 541, 549]
-                
+
                  Performance counter stats for &#39;java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc -XX:+UseCondCardMark CardTableTest 2000000000 8 5&#39;:
-                
+
                     63,187,057,676 cycles                    #    0.000 GHz
                    219,369,504,739 instructions              #    3.47  insns per cycle
                         10,018,646 cache-references
                          3,616,081 cache-misses              #   36.094 % of all cache refs
-                
+
                        2.884229639 seconds time elapsed</code></pre>
                 <p>instructions表示cpu执行的指令数量. 可以看到打开<code>UseCondCardMark</code>后，执行的指令数量增加了. cache-references表示cpu访问cache的次数, cache-misses表示访问cache失败的次数. cpu和主内存之间存在着多级缓存，这里统计的是最后一级缓存的访问情况。cache-references的值太高, 说明L1 cache的miss量比较高，cpu穿透了L1 cache. cache-misses数值太高, 表示数据失效或者没有加载到最后一级cache中。而伪共享造成的问题是导致多级缓存里的数据全都失效，因此cache-references和cache-misses的数量都会增加。上面的数据也说明了这一点。</p>
                 <h2 id="结论">结论</h2>
@@ -214,14 +214,16 @@
                 <div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>
             </article>
         </main>
+        <footer class="bottom cp ">
+            <p>Copyright © 2017 yoje </p>
+        </footer>
+
     </div>
     <!-- <div id="forkme ">
         <a href="https://github.com/huangyoje "><img src="https://camo.githubusercontent.com/52760788cde945287fbb584134c4cbc2bc36f904/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67
                     " alt="Fork me on GitHub " data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png "></a>
     </div> -->
-    <footer class="bottom cp ">
-        <p>Copyright © 2017 yoje </p>
-    </footer>
+
 
 </body>
 
