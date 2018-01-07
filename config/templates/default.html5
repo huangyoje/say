@@ -43,10 +43,13 @@
             </div>
             <div class="menu ">
                 <div class="menu-item ">
-                    <a class="menu-item-link" href="/"><span>博客</span></a>
+                    <a class="menu-item-link" href="/"><span>blog</span></a>
+                </div>
+                <div class="menu-item ">
+                    <a class="menu-item-link" href="/"><span>slide</span></a>
                 </div>
                 <div class="menu-item  ">
-                    <a class="menu-item-link" href="#"><span>标签</span></a>
+                    <a class="menu-item-link" href="#"><span>tag</span></a>
                 </div>
             </div>
             <div class="feed ">

@@ -92,15 +92,11 @@ function renderBlogItems(blogItems){
   blogItems.forEach(function (item){
     blogLiElems.push(sprintf(blogLiElem, item));
   })
-  blogLiElems.forEach(function (i){
-    console.log(i);
-  })
   return blogLiElems.join("<br>");
 }
 
 // 生成index 页面
 function createIndex(){
-  console.log('start create index');
   var blogItems = getBlogItems();
   // 获取index页面模版
   var index_$ = cheerio.load(fs.readFileSync(indexTemplateDir), { decodeEntities: false });
