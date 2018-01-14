@@ -1,11 +1,13 @@
 ---
 title: 'UseCondCardMark'
+author: yoje
 date: 2018-01-07
-...
+---
+
 
 ## CardTable
 
-   分代垃圾回收器中, 除了full gc会回收整个堆内存, 其余的gc通常只会回收部分堆空间。card table则是为了实现部分垃圾回收时使用到的数据结构.
+分代垃圾回收器中, 除了full gc会回收整个堆内存, 其余的gc通常只会回收部分堆空间。card table则是为了实现部分垃圾回收时使用到的数据结构.
 
 [https://stackoverflow.com/questions/19154607/how-actually-card-table-and-writer-barrier-works](https://stackoverflow.com/questions/19154607/how-actually-card-table-and-writer-barrier-works)
 [https://blogs.msdn.microsoft.com/abhinaba/2009/03/02/back-to-basics-generational-garbage-collection/](https://blogs.msdn.microsoft.com/abhinaba/2009/03/02/back-to-basics-generational-garbage-collection/)
@@ -13,9 +15,12 @@ date: 2018-01-07
 ## CardTable overhead
 
 通过使用cardtable, 在一次ygc中,可以快速的找到old generation引用的young generation的对象,从而加快ygc标记存活对象的速度.但是为了使用cardtable记录跨代的引用关系, 需要使用write barrier记录引用的修改状态. 这带来的问题有两个:
-1. 使用write barrier带来的额外指令消耗
-2. card table的修改带来的伪共享                   
-在hotspot jvm的card table实现中, 使用1byte表示512bytes(card page size)的空间. 也就是如果这512bytes的内存中进行引用关系的修改时, 会对这个512bytes空间对应的card table中的那个字节进行标记.  而card table是使用字节<font color=green>数组</font>实现的, 也就意味着card table在占用一片连续的内存空间。
+
+- 使用write barrier带来的额外指令消耗
+- card table的修改带来的伪共享     
+
+在hotspot jvm的card table实现中, 使用1byte表示512bytes(card page size)的空间. 也就是如果这512bytes的内存中进行引用关系的修改时, 会对这个512bytes空间对应的card table中的那个字节进行标记.  而card table是使用字节数组实现的, 也就意味着card table在占用一片连续的内存空间。
+
 现代cpu和主内存之间,通常都有多级缓存，这些缓存的基本单位是cache line。 假设cache line的大小是64bytes(现在大多数的架构都是64bytes)，如果一个cache line缓存了card table, 则该cache line所存储的card table 对应的内存空间是 64 * 512 bytes = 32KB，如果多个核并发地修改这32KB的空间里的引用，每个核都会将这32KB内存对应的card table缓存到自己的cache line中，一个核修改之后，必定导致其它核cache line的数据失效，从而穿透cache, 访问主内存。 而在写并发度非常高的应用中，这会对性能造成很大的伤害。
 
 ## demo
@@ -88,7 +93,8 @@ public class CardTableTest {
 }
 ```
 代码来自open jdk的某个邮件(找不到原始链接)。
-做的事情是对数组的某个元素进行一定次数的读写操作，按照道理来讲，这段程序的执行时间随着并发度提高会线性减小。
+
+做的事情是对数组的某个元素进行指定次数的读写操作，按照道理来讲，这段程序的执行时间随着并发度提高会线性减小。
 
 ## test
 
@@ -109,7 +115,8 @@ running times: [3749, 3694, 3640, 3673, 3660]
 java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc  CardTableTest 2000000000 8 5
 running times: [3726, 3594, 3637, 3726, 2733]
 ```
-WTF. 😠 &nbsp; 难道24核是假的吗. 并发度的增加对性能的影响微乎其微.
+
+WTF. 😠 &nbsp; 并发度的增加对性能的影响微乎其微.
 
 分析一下代码, `threads.add(new Worker(sz))`, 这里根据设置的并发度创建相应数量的线程,并发执行任务。但这些并发线程都是在主线程里创建的，也就是所有的Worker对象都是分配在主线程的TLAB, 并且位于连续的内存空间. 根据前面对card table伪共享的分析，可以看出所有的Worker对象可能位于同一cache line, 并且每个Worker对象由各自的线程进行引用读写操作,所以card table 带来的伪共享可能会造成性能下降。
 
@@ -117,6 +124,7 @@ WTF. 😠 &nbsp; 难道24核是假的吗. 并发度的增加对性能的影响�
 
 通过使用`-XX:+UseCondCardMark`开启有条件地card mark, 可以解决上面担心的伪共享问题。
 以A.a = b为例, jvm默认使用无条件card mark, 伪代码如下
+
 ```
 找到a在card table中对应的byte位.
 对找到的byte位进行标记.(这一次标记操作肯定会让cache line 失效)
@@ -129,8 +137,10 @@ WTF. 😠 &nbsp; 难道24核是假的吗. 并发度的增加对性能的影响�
   如果没有被标记，则对找到的byte位进行标记.(这一次标记操作肯定会让cache line 失效)
 执行A.a = b 操作.
 ```
+
 通过在标记之前，增加一个条件判断, 虽然增加了额外的指令,但是避免了针对card table中相同byte的标记操作带来的伪共享问题.
 测试数据如下
+
 ```
 // 并发度=4
 java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc  -XX:+UseCondCardMark CardTableTest 2000000000 4 5
@@ -139,7 +149,8 @@ running times: [1053, 1057, 1100, 1150, 1118]
 java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc  -XX:+UseCondCardMark CardTableTest 2000000000 8 5
 running times: [566, 563, 642, 621, 651]
 ```
-Good Job!
+
+Good Job 😏
 
 ## 观察伪共享造成的cache失效
 
@@ -176,8 +187,10 @@ running times: [590, 574, 564, 541, 549]
        2.884229639 seconds time elapsed
 ```
 
-instructions表示cpu执行的指令数量. 可以看到打开`UseCondCardMark`后，执行的指令数量增加了.    
-cache-references表示cpu访问cache的次数, cache-misses表示访问cache失败的次数. cpu和主内存之间存在着多级缓存，这里统计的是最后一级缓存的访问情况。cache-references的值太高, 说明L1 cache的miss量比较高，cpu穿透了L1 cache. cache-misses数值太高, 表示数据失效或者没有加载到最后一级cache中。而伪共享造成的问题是导致多级缓存里的数据全都失效，因此cache-references和cache-misses的数量都会增加。上面的数据也说明了这一点。
+instructions表示cpu执行的指令数量. 可以看到打开`UseCondCardMark`后，执行的指令数量增加了.合理，因为多了if分支判断指令消耗.
+
+cache-references表示cpu访问cache的次数, cache-misses表示访问cache失败的次数. cpu和主内存之间存在着多级(L1,L2...LL)缓存，这里统计的是最后一级缓存(LL)的访问情况。cache-references的值太高, 说明L1 cache的miss量比较高，cpu穿透了L1 cache, 访问LLcache. cache-misses数值太高, 表示LL cache穿透。而伪共享造成的问题是导致多级缓存里的数据全都失效，因此cache-references和cache-misses的数量都会增加。上面的数据也说明了这一点。
+
 
 ## 结论
 
@@ -188,8 +201,10 @@ java -XX:+UseG1GC -Xms32m -Xmx32m -server -verbose:gc  CardTableTest 2000000000 
 running times: [702, 735, 839, 856, 837]
  ```
 
-PS:
-测试代码中, 有一行注释的代码 `long[] padding = new long[4096];`，这里通过填充的方式, 使得每个Worker对象位于不同的card page 中，进而使得对应的card table中的byte不会位于同一个cache line. 但是这种填充方式有时候效果明显，有时候没有任何效果，可能是由于jvm的内部的优化(重排或者无用字段丢弃)导致填充失效.
+
+PS:   
+测试代码中, 有一行注释的代码 `long[] padding = new long[4096];`，这里通过填充的方式, 使得每个Worker对象位于不同的card page 中，进而使得对应的card table中的byte不会位于同一个cache line. 但是这种填充方式有时候效果明显，有时候没有任何效果，可能是由于jvm的内部的优化(重排或者无用字段丢弃)导致填充失效。
+
 
 ## references
 

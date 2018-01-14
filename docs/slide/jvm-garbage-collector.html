@@ -3,9 +3,10 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>garbage collector</title>
+	<title>garbage collector & g1</title>
 	<meta name="description" content="jvm-gc">
 	<meta name="author" content="yoje">
+	<meta name="date" content="2018-01-01" />
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -50,7 +51,7 @@
 		<div class="slides ">
 			<section>
 				<h2>garbage collector & g1</h2>
-				<p style="font-family:fantasy;">Created by <a href="yoje.com" style="color:#e0ff17">yoje</a>&nbsp;&nbsp;<i class="em-svg em-beers" style="width:150px;height:150px;"></i></p>
+				<p style="font-family:fantasy;">Created by <a href="http://yoje.me" style="color:#e0ff17">yoje</a>&nbsp;&nbsp;<i class="em-svg em-beers" style="width:150px;height:150px;"></i></p>
 			</section>
 			<section>
 				<h2>基本概念</h2>
@@ -105,12 +106,12 @@ public class LRUCache {
 					<p>假设不成立 &nbsp;&nbsp;<i class="em-svg em-weary"></i></p>
 				</section>
 				<section>
-					<h2>generational problem</h2>
+					<h2>generational issues</h2>
 					<img data-src="http://oscbgsllb.bkt.clouddn.com/gen-gc-1.png" alt="gen gc" style="max-width:50%;max-height:50%">
 					<p>How to collect young generation safely and quickly ?</p>
 				</section>
 				<section>
-					<h2>generational problem</h2>
+					<h2>generational issues</h2>
 					<img data-src="http://oscbgsllb.bkt.clouddn.com/gen-gc-2-card-table.png" alt="" style="max-width:50%;max-height:50%">
 				</section>
 				<section>
@@ -208,10 +209,8 @@ public class LRUCache {
 				<section>
 					<h2>card table false sharing</h2>
 					<p>what about G1 &nbsp;<i class="em-svg em-thinking_face"></i></p>
-					<p>
-						<pre>java -Xms6g -Xmx8g -server -XX:+UseG1GC -verbose:gc CardTableTest 2000000000 16 5</pre>
-						<p><pre>[791, 651, 688, 753, 682]</pre></p><br>
-					</p>
+					<p><pre class="fragment fade-up">java -Xms6g -Xmx8g -server -XX:+UseG1GC -verbose:gc CardTableTest 2000000000 16 5</pre></p>
+						<p><pre class="fragment fade-up">[791, 651, 688, 753, 682]</pre></p>
 				</section>
 				<section>
 					<h3>card table false sharing</h3>
@@ -262,17 +261,23 @@ public class LRUCache {
 						</tbody>
 					</table>
 				</section>
+				<section>
+					<h2>card table marking overhead</h2>
+					<ul>
+						<li>@See <br><a href="http://yoje.me/UseCondCardMark.html">http://yoje.me/UseCondCardMark.html</a></li>
+					</ul>
+				</section>
 			</section>
 			<section>
 				<section>
-					<h2>concurrent mark problem</h2>
+					<h2>concurrent mark issues</h2>
 					<img data-src="http://oscbgsllb.bkt.clouddn.com/3-color-mark-1.png" alt="" style="max-width:30%;max-height:30%">
 					<br>
 					<p>某一时刻的对象图</p>
 					<p>使用3色标记法进行标记活对象</p>
 				</section>
 				<section>
-					<h2>concurrent mark problem</h2>
+					<h2>concurrent mark issues</h2>
 					<p>Three-Color Abstraction</p>
 					<ul>
 						<li>White: not ye visited</li>
@@ -281,19 +286,19 @@ public class LRUCache {
 					</ul>
 				</section>
 				<section>
-					<h2>concurrent mark problem</h2>
+					<h2>concurrent mark issues</h2>
 					<img data-src="http://oscbgsllb.bkt.clouddn.com/3-color-mark-2.png" alt="" style="max-width:30%;max-height:30%">
 				</section>
 				<section>
-					<h2>concurrent mark problem</h2>
+					<h2>concurrent mark issues</h2>
 					<img data-src="http://oscbgsllb.bkt.clouddn.com/3-color-mark-3.png" alt="" style="max-width:30%;max-height:30%">
 				</section>
 				<section>
-					<h2>concurrent mark problem</h2>
+					<h2>concurrent mark issues</h2>
 					<img data-src="http://oscbgsllb.bkt.clouddn.com/3-color-mark-4.png" alt="" style="max-width:30%;max-height:30%">
 				</section>
 				<section>
-					<h2>concurrent mark problem</h2>
+					<h2>concurrent mark issues</h2>
 					<img data-src="http://oscbgsllb.bkt.clouddn.com/3-color-mark-5.png" alt="" style="max-width:30%;max-height:30%">
 					<br>
 					<ul>
@@ -303,7 +308,7 @@ public class LRUCache {
 					</ul>
 				</section>
 				<section>
-					<h2>concurrent mark problem</h2>
+					<h2>concurrent mark issues</h2>
 					<img data-src="http://oscbgsllb.bkt.clouddn.com/3-color-mark-6.png" alt="" style="max-width:30%;max-height:30%">
 					<br>
 					<ul>
@@ -635,7 +640,7 @@ its best effort to recycle all discarded objects.
 							<p>do nothing</p>
 						</li>
 						<li class="fragment fade-up">-XX:+ExplicitGCInvokesConcurrent<br>
-							<p>initiate a G1 concurrent cycle</p>
+							<p>initiate a concurrent cycle</p>
 							<p>works with cms, g1</p>
 						</li>
 

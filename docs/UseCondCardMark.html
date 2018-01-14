@@ -2,226 +2,213 @@
 <html  lang="zh-CN" >
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="generator" content="pandoc" />
-    <!--  author -->
-    <meta name="author" content="yoje" />
-    <!--  date -->
-    <meta name="date" content="2018-01-07" />     <!--  title -->
-    <title>UseCondCardMark</title>
-    <!--  网站图标 -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="apple-touch-icon-precomposed" href="/favicon.png">
-    <!--  css -->
-        <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="pandoc" />
+  <!--  author -->
+  <meta name="author" content="yoje" />
+  <!--  date -->
+  <meta name="date" content="2018-01-07" />   <!--  title -->
+  <title>UseCondCardMark</title>
+  <!--  网站图标 -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon-precomposed" href="favicon.png">
+  <!--  css -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 
 
-    <!--  js  -->
-    <script src="https://cdn.bootcss.com/jquery/3.1.1/jquery.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
-    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <!--  js  -->
+  <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="js/private.js"></script>
 
 
-    <!--[if lt IE 9]>
+  <!--[if lt IE 9]>
       <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
     <![endif]-->
 </head>
 
 <body>
-    <div class="container">
-        <header class="header ">
-            <div class="avatar ">
-                <img src="http://oscbgsllb.bkt.clouddn.com/me.jpg" class="img-circle" alt="where ma i" width="150px " height="150px ">
-                <p class="avatar-desc">boma ye</p>
-            </div>
-            <div class="menu ">
-                <div class="menu-item ">
-                    <a class="menu-item-link" href="/"><span>blog</span></a>
-                </div>
-                <div class="menu-item ">
-                    <a class="menu-item-link" href="/"><span>slide</span></a>
-                </div>
-                <div class="menu-item  ">
-                    <a class="menu-item-link" href="#"><span>tag</span></a>
-                </div>
-            </div>
-            <div class="feed ">
-                <a class="feed-link " href="# "><i class="fa fa-rss fa-2x " aria-hidden="true "></i> <span>RSS</span></a>
-            </div>
-            <div class="contact ">
-                <a class="contact-link " href="https://github.com/huangyoje"><i class="fa fa-github fa-fw" aria-hidden="true "></i> </a>
-                <a class="contact-link " href="https://plus.google.com/115454074587838046879"><i class="fa fa-google-plus" aria-hidden="true"></i> </a>
-                <a class="contact-link " href="https://twitter.com/huayoje"><i class="fa fa-twitter fa-fw" aria-hidden="true "></i> </a>
-            </div>
-        </header>
-        <main class="content " role="main ">
-            <!--  博客 -->
-            <article class="post ">
-                <!--  博客标题 -->
-                <header id="title">
-                    <h1>UseCondCardMark</h1>
-                    <small>2018-01-07</small>
-                </header>
-                <!--  博客正文 -->
-                <h2 id="cardtable">CardTable</h2>
-                <p>分代垃圾回收器中, 除了full gc会回收整个堆内存, 其余的gc通常只会回收部分堆空间。card table则是为了实现部分垃圾回收时使用到的数据结构.</p>
-                <p><a href="https://stackoverflow.com/questions/19154607/how-actually-card-table-and-writer-barrier-works" class="uri">https://stackoverflow.com/questions/19154607/how-actually-card-table-and-writer-barrier-works</a> <a href="https://blogs.msdn.microsoft.com/abhinaba/2009/03/02/back-to-basics-generational-garbage-collection/" class="uri">https://blogs.msdn.microsoft.com/abhinaba/2009/03/02/back-to-basics-generational-garbage-collection/</a></p>
-                <h2 id="cardtable-overhead">CardTable overhead</h2>
-                <p>通过使用cardtable, 在一次ygc中,可以快速的找到old generation引用的young generation的对象,从而加快ygc标记存活对象的速度.但是为了使用cardtable记录跨代的引用关系, 需要使用write barrier记录引用的修改状态. 这带来的问题有两个: 1. 使用write barrier带来的额外指令消耗 2. card table的修改带来的伪共享<br />
-                在hotspot jvm的card table实现中, 使用1byte表示512bytes(card page size)的空间. 也就是如果这512bytes的内存中进行引用关系的修改时, 会对这个512bytes空间对应的card table中的那个字节进行标记. 而card table是使用字节<font color=green>数组</font>实现的, 也就意味着card table在占用一片连续的内存空间。 现代cpu和主内存之间,通常都有多级缓存，这些缓存的基本单位是cache line。 假设cache line的大小是64bytes(现在大多数的架构都是64bytes)，如果一个cache line缓存了card table, 则该cache line所存储的card table 对应的内存空间是 64 * 512 bytes = 32KB，如果多个核并发地修改这32KB的空间里的引用，每个核都会将这32KB内存对应的card table缓存到自己的cache line中，一个核修改之后，必定导致其它核cache line的数据失效，从而穿透cache, 访问主内存。 而在写并发度非常高的应用中，这会对性能造成很大的伤害。</p>
-                <h2 id="demo">demo</h2>
-                <p>通过一段代码说明一下上面的两点。</p>
-                <div class="sourceCode" id="cb1"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">public</span> <span class="kw">class</span> CardTableTest {</a>
-                <a class="sourceLine" id="cb1-2" data-line-number="2"></a>
-                <a class="sourceLine" id="cb1-3" data-line-number="3">    <span class="kw">class</span> Worker <span class="kw">extends</span> <span class="bu">Thread</span> {</a>
-                <a class="sourceLine" id="cb1-4" data-line-number="4">        <span class="bu">String</span>[] array = <span class="kw">new</span> <span class="bu">String</span>[<span class="dv">10</span>];</a>
-                <a class="sourceLine" id="cb1-5" data-line-number="5">        <span class="co">// 使用long数组进行填充, 32KB内存</span></a>
-                <a class="sourceLine" id="cb1-6" data-line-number="6">        <span class="co">// long[] padding = new long[4096];</span></a>
-                <a class="sourceLine" id="cb1-7" data-line-number="7">        <span class="dt">int</span> times;</a>
-                <a class="sourceLine" id="cb1-8" data-line-number="8"></a>
-                <a class="sourceLine" id="cb1-9" data-line-number="9">        <span class="kw">public</span> <span class="fu">Worker</span>(<span class="dt">int</span> times) {</a>
-                <a class="sourceLine" id="cb1-10" data-line-number="10">            <span class="kw">this</span>.<span class="fu">times</span> = times;</a>
-                <a class="sourceLine" id="cb1-11" data-line-number="11">        }</a>
-                <a class="sourceLine" id="cb1-12" data-line-number="12"></a>
-                <a class="sourceLine" id="cb1-13" data-line-number="13">        <span class="kw">public</span> <span class="dt">void</span> <span class="fu">run</span>() {</a>
-                <a class="sourceLine" id="cb1-14" data-line-number="14">            <span class="bu">String</span>[] arr = array;</a>
-                <a class="sourceLine" id="cb1-15" data-line-number="15">            <span class="dt">int</span> i = <span class="dv">0</span>;</a>
-                <a class="sourceLine" id="cb1-16" data-line-number="16">            <span class="dt">int</span> pos = <span class="dv">5</span>;</a>
-                <a class="sourceLine" id="cb1-17" data-line-number="17">            <span class="bu">String</span> v = <span class="kw">new</span> <span class="bu">String</span>(<span class="st">&quot;hello&quot;</span>);</a>
-                <a class="sourceLine" id="cb1-18" data-line-number="18">            <span class="kw">while</span> (i &lt; times) {</a>
-                <a class="sourceLine" id="cb1-19" data-line-number="19">                <span class="kw">if</span> (i % <span class="dv">2</span> == <span class="dv">0</span>) {</a>
-                <a class="sourceLine" id="cb1-20" data-line-number="20">                    arr[pos] = v;</a>
-                <a class="sourceLine" id="cb1-21" data-line-number="21">                    pos += <span class="dv">1</span>;</a>
-                <a class="sourceLine" id="cb1-22" data-line-number="22">                } <span class="kw">else</span> {</a>
-                <a class="sourceLine" id="cb1-23" data-line-number="23">                    pos -= <span class="dv">1</span>;</a>
-                <a class="sourceLine" id="cb1-24" data-line-number="24">                    v = arr[pos];</a>
-                <a class="sourceLine" id="cb1-25" data-line-number="25">                }</a>
-                <a class="sourceLine" id="cb1-26" data-line-number="26">                i++;</a>
-                <a class="sourceLine" id="cb1-27" data-line-number="27">            }</a>
-                <a class="sourceLine" id="cb1-28" data-line-number="28">        }</a>
-                <a class="sourceLine" id="cb1-29" data-line-number="29">    }</a>
-                <a class="sourceLine" id="cb1-30" data-line-number="30"></a>
-                <a class="sourceLine" id="cb1-31" data-line-number="31">    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span>(<span class="bu">String</span>[] args) {</a>
-                <a class="sourceLine" id="cb1-32" data-line-number="32"></a>
-                <a class="sourceLine" id="cb1-33" data-line-number="33">        <span class="kw">if</span> (args == <span class="kw">null</span> || args.<span class="fu">length</span> != <span class="dv">3</span>) {</a>
-                <a class="sourceLine" id="cb1-34" data-line-number="34">            <span class="kw">throw</span> <span class="kw">new</span> <span class="bu">IllegalArgumentException</span>(<span class="st">&quot;java CardTableTest size parallelLevel count&quot;</span>);</a>
-                <a class="sourceLine" id="cb1-35" data-line-number="35">        }</a>
-                <a class="sourceLine" id="cb1-36" data-line-number="36">        <span class="dt">int</span> size = <span class="bu">Integer</span>.<span class="fu">parseInt</span>(args[<span class="dv">0</span>]);</a>
-                <a class="sourceLine" id="cb1-37" data-line-number="37">        <span class="dt">int</span> parallelLevel = <span class="bu">Integer</span>.<span class="fu">parseInt</span>(args[<span class="dv">1</span>]);</a>
-                <a class="sourceLine" id="cb1-38" data-line-number="38">        <span class="dt">int</span> count = <span class="bu">Integer</span>.<span class="fu">parseInt</span>(args[<span class="dv">2</span>]);</a>
-                <a class="sourceLine" id="cb1-39" data-line-number="39"></a>
-                <a class="sourceLine" id="cb1-40" data-line-number="40">        <span class="bu">ArrayList</span>&lt;<span class="bu">Long</span>&gt; measurements = <span class="kw">new</span> <span class="bu">ArrayList</span>&lt;&gt;();</a>
-                <a class="sourceLine" id="cb1-41" data-line-number="41">        CardTableTest cardTableTest = <span class="kw">new</span> <span class="fu">CardTableTest</span>();</a>
-                <a class="sourceLine" id="cb1-42" data-line-number="42">        <span class="kw">for</span> (<span class="dt">int</span> i = <span class="dv">0</span>; i &lt; count; i++) {</a>
-                <a class="sourceLine" id="cb1-43" data-line-number="43">            <span class="dt">long</span> start = <span class="bu">System</span>.<span class="fu">currentTimeMillis</span>();</a>
-                <a class="sourceLine" id="cb1-44" data-line-number="44">            cardTableTest.<span class="fu">run</span>(size, parallelLevel);</a>
-                <a class="sourceLine" id="cb1-45" data-line-number="45">            measurements.<span class="fu">add</span>(<span class="bu">System</span>.<span class="fu">currentTimeMillis</span>() - start);</a>
-                <a class="sourceLine" id="cb1-46" data-line-number="46">        }</a>
-                <a class="sourceLine" id="cb1-47" data-line-number="47">        <span class="bu">System</span>.<span class="fu">out</span>.<span class="fu">println</span>(<span class="st">&quot;running times: &quot;</span> + measurements);</a>
-                <a class="sourceLine" id="cb1-48" data-line-number="48">    }</a>
-                <a class="sourceLine" id="cb1-49" data-line-number="49"></a>
-                <a class="sourceLine" id="cb1-50" data-line-number="50">    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">run</span>(<span class="dt">int</span> size, <span class="dt">int</span> parrelLevel) {</a>
-                <a class="sourceLine" id="cb1-51" data-line-number="51">        <span class="dt">int</span> sz = size / parrelLevel;</a>
-                <a class="sourceLine" id="cb1-52" data-line-number="52">        <span class="bu">ArrayList</span>&lt;<span class="bu">Thread</span>&gt; threads = <span class="kw">new</span> <span class="bu">ArrayList</span>&lt;&gt;();</a>
-                <a class="sourceLine" id="cb1-53" data-line-number="53">        <span class="kw">for</span> (<span class="dt">int</span> i = <span class="dv">0</span>; i &lt; parrelLevel; i++) {</a>
-                <a class="sourceLine" id="cb1-54" data-line-number="54">            threads.<span class="fu">add</span>(<span class="kw">new</span> <span class="fu">Worker</span>(sz));</a>
-                <a class="sourceLine" id="cb1-55" data-line-number="55">            threads.<span class="fu">get</span>(i).<span class="fu">start</span>();</a>
-                <a class="sourceLine" id="cb1-56" data-line-number="56">        }</a>
-                <a class="sourceLine" id="cb1-57" data-line-number="57">        <span class="kw">for</span> (<span class="dt">int</span> i = <span class="dv">0</span>; i &lt; parrelLevel; i++) {</a>
-                <a class="sourceLine" id="cb1-58" data-line-number="58">            <span class="kw">try</span> {</a>
-                <a class="sourceLine" id="cb1-59" data-line-number="59">                threads.<span class="fu">get</span>(i).<span class="fu">join</span>();</a>
-                <a class="sourceLine" id="cb1-60" data-line-number="60">            } <span class="kw">catch</span> (<span class="bu">Exception</span> e) {</a>
-                <a class="sourceLine" id="cb1-61" data-line-number="61">            }</a>
-                <a class="sourceLine" id="cb1-62" data-line-number="62">        }</a>
-                <a class="sourceLine" id="cb1-63" data-line-number="63">    }</a>
-                <a class="sourceLine" id="cb1-64" data-line-number="64">}</a></code></pre></div>
-                <p>代码来自open jdk的某个邮件(找不到原始链接)。 做的事情是对数组的某个元素进行一定次数的读写操作，按照道理来讲，这段程序的执行时间随着并发度提高会线性减小。</p>
-                <h2 id="test">test</h2>
-                <p>对上面代码编译后通过<code>java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc CardTableTest 2000000000 4 5</code> 执行, 打印gc是为了观察gc日志, 保证测试结果不受gc影响,如果测试期间出现了gc, 则通过调整堆大小避免。2000000000 是进行读写的总次数，4是并发度， 5是测试次数。</p>
-                <p>运行环境: linux 2.6.32-358.23.2.el6.x86_64, 24核, java version 1.8.0_91</p>
-                <pre><code>// 并发度=1
-                java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc  CardTableTest 2000000000 1 5
-                running times: [3813, 3826, 4541, 4399, 4341]
-                // 并发度=2
-                java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc  CardTableTest 2000000000 2 5
-                running times: [3414, 3490, 3430, 3421, 3417]
-                // 并发度=4
-                java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc  CardTableTest 2000000000 4 5
-                running times: [3749, 3694, 3640, 3673, 3660]
-                // 并发度=8
-                java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc  CardTableTest 2000000000 8 5
-                running times: [3726, 3594, 3637, 3726, 2733]</code></pre>
-                <p>WTF. 😠   难道24核是假的吗. 并发度的增加对性能的影响微乎其微.</p>
-                <p>分析一下代码, <code>threads.add(new Worker(sz))</code>, 这里根据设置的并发度创建相应数量的线程,并发执行任务。但这些并发线程都是在主线程里创建的，也就是所有的Worker对象都是分配在主线程的TLAB, 并且位于连续的内存空间. 根据前面对card table伪共享的分析，可以看出所有的Worker对象可能位于同一cache line, 并且每个Worker对象由各自的线程进行引用读写操作,所以card table 带来的伪共享可能会造成性能下降。</p>
-                <h2 id="xxusecondcardmark">-XX:+UseCondCardMark</h2>
-                <p>通过使用<code>-XX:+UseCondCardMark</code>开启有条件地card mark, 可以解决上面担心的伪共享问题。 以A.a = b为例, jvm默认使用无条件card mark, 伪代码如下</p>
-                <pre><code>找到a在card table中对应的byte位.
-                对找到的byte位进行标记.(这一次标记操作肯定会让cache line 失效)
-                执行A.a = b 操作.</code></pre>
-                <p>有条件的card mark如下</p>
-                <pre><code>找到a在card table中对应的byte位.
-                判断该byte位是否被标记
-                  如果没有被标记，则对找到的byte位进行标记.(这一次标记操作肯定会让cache line 失效)
-                执行A.a = b 操作.</code></pre>
-                <p>通过在标记之前，增加一个条件判断, 虽然增加了额外的指令,但是避免了针对card table中相同byte的标记操作带来的伪共享问题. 测试数据如下</p>
-                <pre><code>// 并发度=4
-                java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc  -XX:+UseCondCardMark CardTableTest 2000000000 4 5
-                running times: [1053, 1057, 1100, 1150, 1118]
-                // 并发度=8
-                java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc  -XX:+UseCondCardMark CardTableTest 2000000000 8 5
-                running times: [566, 563, 642, 621, 651]</code></pre>
-                <p>Good Job!</p>
-                <h2 id="观察伪共享造成的cache失效">观察伪共享造成的cache失效</h2>
-                <p>使用 <a href="http://www.brendangregg.com/perf.html">perf</a> 观察cpu和主内存之间cache的访问情况.</p>
-                <h4 id="xx-usecondcardmark">1. -XX:-UseCondCardMark</h4>
-                <p><code>sudo perf stat -ecycles,instructions,cache-references,cache-misses java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc  -XX:-UseCondCardMark CardTableTest 2000000000 8 5</code></p>
-                <pre><code>running times: [3668, 3820, 3527, 3623, 2456]
-                
-                 Performance counter stats for &#39;java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc -XX:-UseCondCardMark CardTableTest 2000000000 8 5&#39;:
-                
-                   380,627,593,591 cycles                    #    0.000 GHz
-                   216,449,367,675 instructions              #    0.57  insns per cycle
-                       344,499,146 cache-references
-                       137,509,095 cache-misses              #   39.916 % of all cache refs
-                
-                      17.163011340 seconds time elapsed</code></pre>
-                <h4 id="xxusecondcardmark-1">2. -XX:+UseCondCardMark</h4>
-                <p><code>sudo perf stat -ecycles,instructions,cache-references,cache-misses java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc  -XX:+UseCondCardMark CardTableTest 2000000000 8 5</code></p>
-                <pre><code>running times: [590, 574, 564, 541, 549]
-                
-                 Performance counter stats for &#39;java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc -XX:+UseCondCardMark CardTableTest 2000000000 8 5&#39;:
-                
-                    63,187,057,676 cycles                    #    0.000 GHz
-                   219,369,504,739 instructions              #    3.47  insns per cycle
-                        10,018,646 cache-references
-                         3,616,081 cache-misses              #   36.094 % of all cache refs
-                
-                       2.884229639 seconds time elapsed</code></pre>
-                <p>instructions表示cpu执行的指令数量. 可以看到打开<code>UseCondCardMark</code>后，执行的指令数量增加了. cache-references表示cpu访问cache的次数, cache-misses表示访问cache失败的次数. cpu和主内存之间存在着多级缓存，这里统计的是最后一级缓存的访问情况。cache-references的值太高, 说明L1 cache的miss量比较高，cpu穿透了L1 cache. cache-misses数值太高, 表示数据失效或者没有加载到最后一级cache中。而伪共享造成的问题是导致多级缓存里的数据全都失效，因此cache-references和cache-misses的数量都会增加。上面的数据也说明了这一点。</p>
-                <h2 id="结论">结论</h2>
-                <ol type="1">
-                <li>Always use <code>-XX:+UseCondCardMark</code> in parallel garbage collector.</li>
-                <li>g1 garbage collector的实现机制避免了这个问题，使用g1测试结果如下</li>
-                </ol>
-                <pre><code>java -XX:+UseG1GC -Xms32m -Xmx32m -server -verbose:gc  CardTableTest 2000000000 8 5
-                running times: [702, 735, 839, 856, 837]</code></pre>
-                <p>PS: 测试代码中, 有一行注释的代码 <code>long[] padding = new long[4096];</code>，这里通过填充的方式, 使得每个Worker对象位于不同的card page 中，进而使得对应的card table中的byte不会位于同一个cache line. 但是这种填充方式有时候效果明显，有时候没有任何效果，可能是由于jvm的内部的优化(重排或者无用字段丢弃)导致填充失效.</p>
-                <h2 id="references">references</h2>
-                <p><a href="https://blogs.oracle.com/dave/false-sharing-induced-by-card-table-marking" class="uri">https://blogs.oracle.com/dave/false-sharing-induced-by-card-table-marking</a></p>
-            </article>
-            <!-- 评论 -->
-            <article class="comment ">
-                <!-- 多说评论框 start -->
-                <div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>
-            </article>
-        </main>
-        <footer class="bottom cp ">
-            <p>Copyright © 2017 yoje </p>
-        </footer>
+  <div class="container">
+    <div class="row ">
+      <main class="col-sm-12 content " role="main ">
+        <!--  博客 -->
+        <article class="post ">
+          <!--  博客标题 -->
+          <header id="title">
+            <h1>UseCondCardMark</h1>
+            <small>2018-01-07</small>
+          </header>
+          <!--  博客正文 -->
+          <h2 id="cardtable">CardTable</h2>
+          <p>分代垃圾回收器中, 除了full gc会回收整个堆内存, 其余的gc通常只会回收部分堆空间。card table则是为了实现部分垃圾回收时使用到的数据结构.</p>
+          <p><a href="https://stackoverflow.com/questions/19154607/how-actually-card-table-and-writer-barrier-works" class="uri">https://stackoverflow.com/questions/19154607/how-actually-card-table-and-writer-barrier-works</a> <a href="https://blogs.msdn.microsoft.com/abhinaba/2009/03/02/back-to-basics-generational-garbage-collection/" class="uri">https://blogs.msdn.microsoft.com/abhinaba/2009/03/02/back-to-basics-generational-garbage-collection/</a></p>
+          <h2 id="cardtable-overhead">CardTable overhead</h2>
+          <p>通过使用cardtable, 在一次ygc中,可以快速的找到old generation引用的young generation的对象,从而加快ygc标记存活对象的速度.但是为了使用cardtable记录跨代的引用关系, 需要使用write barrier记录引用的修改状态. 这带来的问题有两个:</p>
+          <ul>
+          <li>使用write barrier带来的额外指令消耗</li>
+          <li>card table的修改带来的伪共享</li>
+          </ul>
+          <p>在hotspot jvm的card table实现中, 使用1byte表示512bytes(card page size)的空间. 也就是如果这512bytes的内存中进行引用关系的修改时, 会对这个512bytes空间对应的card table中的那个字节进行标记. 而card table是使用字节数组实现的, 也就意味着card table在占用一片连续的内存空间。</p>
+          <p>现代cpu和主内存之间,通常都有多级缓存，这些缓存的基本单位是cache line。 假设cache line的大小是64bytes(现在大多数的架构都是64bytes)，如果一个cache line缓存了card table, 则该cache line所存储的card table 对应的内存空间是 64 * 512 bytes = 32KB，如果多个核并发地修改这32KB的空间里的引用，每个核都会将这32KB内存对应的card table缓存到自己的cache line中，一个核修改之后，必定导致其它核cache line的数据失效，从而穿透cache, 访问主内存。 而在写并发度非常高的应用中，这会对性能造成很大的伤害。</p>
+          <h2 id="demo">demo</h2>
+          <p>通过一段代码说明一下上面的两点。</p>
+          <div class="sourceCode" id="cb1"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">public</span> <span class="kw">class</span> CardTableTest {</a>
+          <a class="sourceLine" id="cb1-2" data-line-number="2"></a>
+          <a class="sourceLine" id="cb1-3" data-line-number="3">    <span class="kw">class</span> Worker <span class="kw">extends</span> <span class="bu">Thread</span> {</a>
+          <a class="sourceLine" id="cb1-4" data-line-number="4">        <span class="bu">String</span>[] array = <span class="kw">new</span> <span class="bu">String</span>[<span class="dv">10</span>];</a>
+          <a class="sourceLine" id="cb1-5" data-line-number="5">        <span class="co">// 使用long数组进行填充, 32KB内存</span></a>
+          <a class="sourceLine" id="cb1-6" data-line-number="6">        <span class="co">// long[] padding = new long[4096];</span></a>
+          <a class="sourceLine" id="cb1-7" data-line-number="7">        <span class="dt">int</span> times;</a>
+          <a class="sourceLine" id="cb1-8" data-line-number="8"></a>
+          <a class="sourceLine" id="cb1-9" data-line-number="9">        <span class="kw">public</span> <span class="fu">Worker</span>(<span class="dt">int</span> times) {</a>
+          <a class="sourceLine" id="cb1-10" data-line-number="10">            <span class="kw">this</span>.<span class="fu">times</span> = times;</a>
+          <a class="sourceLine" id="cb1-11" data-line-number="11">        }</a>
+          <a class="sourceLine" id="cb1-12" data-line-number="12"></a>
+          <a class="sourceLine" id="cb1-13" data-line-number="13">        <span class="kw">public</span> <span class="dt">void</span> <span class="fu">run</span>() {</a>
+          <a class="sourceLine" id="cb1-14" data-line-number="14">            <span class="bu">String</span>[] arr = array;</a>
+          <a class="sourceLine" id="cb1-15" data-line-number="15">            <span class="dt">int</span> i = <span class="dv">0</span>;</a>
+          <a class="sourceLine" id="cb1-16" data-line-number="16">            <span class="dt">int</span> pos = <span class="dv">5</span>;</a>
+          <a class="sourceLine" id="cb1-17" data-line-number="17">            <span class="bu">String</span> v = <span class="kw">new</span> <span class="bu">String</span>(<span class="st">&quot;hello&quot;</span>);</a>
+          <a class="sourceLine" id="cb1-18" data-line-number="18">            <span class="kw">while</span> (i &lt; times) {</a>
+          <a class="sourceLine" id="cb1-19" data-line-number="19">                <span class="kw">if</span> (i % <span class="dv">2</span> == <span class="dv">0</span>) {</a>
+          <a class="sourceLine" id="cb1-20" data-line-number="20">                    arr[pos] = v;</a>
+          <a class="sourceLine" id="cb1-21" data-line-number="21">                    pos += <span class="dv">1</span>;</a>
+          <a class="sourceLine" id="cb1-22" data-line-number="22">                } <span class="kw">else</span> {</a>
+          <a class="sourceLine" id="cb1-23" data-line-number="23">                    pos -= <span class="dv">1</span>;</a>
+          <a class="sourceLine" id="cb1-24" data-line-number="24">                    v = arr[pos];</a>
+          <a class="sourceLine" id="cb1-25" data-line-number="25">                }</a>
+          <a class="sourceLine" id="cb1-26" data-line-number="26">                i++;</a>
+          <a class="sourceLine" id="cb1-27" data-line-number="27">            }</a>
+          <a class="sourceLine" id="cb1-28" data-line-number="28">        }</a>
+          <a class="sourceLine" id="cb1-29" data-line-number="29">    }</a>
+          <a class="sourceLine" id="cb1-30" data-line-number="30"></a>
+          <a class="sourceLine" id="cb1-31" data-line-number="31">    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span>(<span class="bu">String</span>[] args) {</a>
+          <a class="sourceLine" id="cb1-32" data-line-number="32"></a>
+          <a class="sourceLine" id="cb1-33" data-line-number="33">        <span class="kw">if</span> (args == <span class="kw">null</span> || args.<span class="fu">length</span> != <span class="dv">3</span>) {</a>
+          <a class="sourceLine" id="cb1-34" data-line-number="34">            <span class="kw">throw</span> <span class="kw">new</span> <span class="bu">IllegalArgumentException</span>(<span class="st">&quot;java CardTableTest size parallelLevel count&quot;</span>);</a>
+          <a class="sourceLine" id="cb1-35" data-line-number="35">        }</a>
+          <a class="sourceLine" id="cb1-36" data-line-number="36">        <span class="dt">int</span> size = <span class="bu">Integer</span>.<span class="fu">parseInt</span>(args[<span class="dv">0</span>]);</a>
+          <a class="sourceLine" id="cb1-37" data-line-number="37">        <span class="dt">int</span> parallelLevel = <span class="bu">Integer</span>.<span class="fu">parseInt</span>(args[<span class="dv">1</span>]);</a>
+          <a class="sourceLine" id="cb1-38" data-line-number="38">        <span class="dt">int</span> count = <span class="bu">Integer</span>.<span class="fu">parseInt</span>(args[<span class="dv">2</span>]);</a>
+          <a class="sourceLine" id="cb1-39" data-line-number="39"></a>
+          <a class="sourceLine" id="cb1-40" data-line-number="40">        <span class="bu">ArrayList</span>&lt;<span class="bu">Long</span>&gt; measurements = <span class="kw">new</span> <span class="bu">ArrayList</span>&lt;&gt;();</a>
+          <a class="sourceLine" id="cb1-41" data-line-number="41">        CardTableTest cardTableTest = <span class="kw">new</span> <span class="fu">CardTableTest</span>();</a>
+          <a class="sourceLine" id="cb1-42" data-line-number="42">        <span class="kw">for</span> (<span class="dt">int</span> i = <span class="dv">0</span>; i &lt; count; i++) {</a>
+          <a class="sourceLine" id="cb1-43" data-line-number="43">            <span class="dt">long</span> start = <span class="bu">System</span>.<span class="fu">currentTimeMillis</span>();</a>
+          <a class="sourceLine" id="cb1-44" data-line-number="44">            cardTableTest.<span class="fu">run</span>(size, parallelLevel);</a>
+          <a class="sourceLine" id="cb1-45" data-line-number="45">            measurements.<span class="fu">add</span>(<span class="bu">System</span>.<span class="fu">currentTimeMillis</span>() - start);</a>
+          <a class="sourceLine" id="cb1-46" data-line-number="46">        }</a>
+          <a class="sourceLine" id="cb1-47" data-line-number="47">        <span class="bu">System</span>.<span class="fu">out</span>.<span class="fu">println</span>(<span class="st">&quot;running times: &quot;</span> + measurements);</a>
+          <a class="sourceLine" id="cb1-48" data-line-number="48">    }</a>
+          <a class="sourceLine" id="cb1-49" data-line-number="49"></a>
+          <a class="sourceLine" id="cb1-50" data-line-number="50">    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">run</span>(<span class="dt">int</span> size, <span class="dt">int</span> parrelLevel) {</a>
+          <a class="sourceLine" id="cb1-51" data-line-number="51">        <span class="dt">int</span> sz = size / parrelLevel;</a>
+          <a class="sourceLine" id="cb1-52" data-line-number="52">        <span class="bu">ArrayList</span>&lt;<span class="bu">Thread</span>&gt; threads = <span class="kw">new</span> <span class="bu">ArrayList</span>&lt;&gt;();</a>
+          <a class="sourceLine" id="cb1-53" data-line-number="53">        <span class="kw">for</span> (<span class="dt">int</span> i = <span class="dv">0</span>; i &lt; parrelLevel; i++) {</a>
+          <a class="sourceLine" id="cb1-54" data-line-number="54">            threads.<span class="fu">add</span>(<span class="kw">new</span> <span class="fu">Worker</span>(sz));</a>
+          <a class="sourceLine" id="cb1-55" data-line-number="55">            threads.<span class="fu">get</span>(i).<span class="fu">start</span>();</a>
+          <a class="sourceLine" id="cb1-56" data-line-number="56">        }</a>
+          <a class="sourceLine" id="cb1-57" data-line-number="57">        <span class="kw">for</span> (<span class="dt">int</span> i = <span class="dv">0</span>; i &lt; parrelLevel; i++) {</a>
+          <a class="sourceLine" id="cb1-58" data-line-number="58">            <span class="kw">try</span> {</a>
+          <a class="sourceLine" id="cb1-59" data-line-number="59">                threads.<span class="fu">get</span>(i).<span class="fu">join</span>();</a>
+          <a class="sourceLine" id="cb1-60" data-line-number="60">            } <span class="kw">catch</span> (<span class="bu">Exception</span> e) {</a>
+          <a class="sourceLine" id="cb1-61" data-line-number="61">            }</a>
+          <a class="sourceLine" id="cb1-62" data-line-number="62">        }</a>
+          <a class="sourceLine" id="cb1-63" data-line-number="63">    }</a>
+          <a class="sourceLine" id="cb1-64" data-line-number="64">}</a></code></pre></div>
+          <p>代码来自open jdk的某个邮件(找不到原始链接)。</p>
+          <p>做的事情是对数组的某个元素进行指定次数的读写操作，按照道理来讲，这段程序的执行时间随着并发度提高会线性减小。</p>
+          <h2 id="test">test</h2>
+          <p>对上面代码编译后通过<code>java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc CardTableTest 2000000000 4 5</code> 执行, 打印gc是为了观察gc日志, 保证测试结果不受gc影响,如果测试期间出现了gc, 则通过调整堆大小避免。2000000000 是进行读写的总次数，4是并发度， 5是测试次数。</p>
+          <p>运行环境: linux 2.6.32-358.23.2.el6.x86_64, 24核, java version 1.8.0_91</p>
+          <pre><code>// 并发度=1
+          java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc  CardTableTest 2000000000 1 5
+          running times: [3813, 3826, 4541, 4399, 4341]
+          // 并发度=2
+          java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc  CardTableTest 2000000000 2 5
+          running times: [3414, 3490, 3430, 3421, 3417]
+          // 并发度=4
+          java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc  CardTableTest 2000000000 4 5
+          running times: [3749, 3694, 3640, 3673, 3660]
+          // 并发度=8
+          java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc  CardTableTest 2000000000 8 5
+          running times: [3726, 3594, 3637, 3726, 2733]</code></pre>
+          <p>WTF. 😠   并发度的增加对性能的影响微乎其微.</p>
+          <p>分析一下代码, <code>threads.add(new Worker(sz))</code>, 这里根据设置的并发度创建相应数量的线程,并发执行任务。但这些并发线程都是在主线程里创建的，也就是所有的Worker对象都是分配在主线程的TLAB, 并且位于连续的内存空间. 根据前面对card table伪共享的分析，可以看出所有的Worker对象可能位于同一cache line, 并且每个Worker对象由各自的线程进行引用读写操作,所以card table 带来的伪共享可能会造成性能下降。</p>
+          <h2 id="xxusecondcardmark">-XX:+UseCondCardMark</h2>
+          <p>通过使用<code>-XX:+UseCondCardMark</code>开启有条件地card mark, 可以解决上面担心的伪共享问题。 以A.a = b为例, jvm默认使用无条件card mark, 伪代码如下</p>
+          <pre><code>找到a在card table中对应的byte位.
+          对找到的byte位进行标记.(这一次标记操作肯定会让cache line 失效)
+          执行A.a = b 操作.</code></pre>
+          <p>有条件的card mark如下</p>
+          <pre><code>找到a在card table中对应的byte位.
+          判断该byte位是否被标记
+            如果没有被标记，则对找到的byte位进行标记.(这一次标记操作肯定会让cache line 失效)
+          执行A.a = b 操作.</code></pre>
+          <p>通过在标记之前，增加一个条件判断, 虽然增加了额外的指令,但是避免了针对card table中相同byte的标记操作带来的伪共享问题. 测试数据如下</p>
+          <pre><code>// 并发度=4
+          java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc  -XX:+UseCondCardMark CardTableTest 2000000000 4 5
+          running times: [1053, 1057, 1100, 1150, 1118]
+          // 并发度=8
+          java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc  -XX:+UseCondCardMark CardTableTest 2000000000 8 5
+          running times: [566, 563, 642, 621, 651]</code></pre>
+          <p>Good Job 😏</p>
+          <h2 id="观察伪共享造成的cache失效">观察伪共享造成的cache失效</h2>
+          <p>使用 <a href="http://www.brendangregg.com/perf.html">perf</a> 观察cpu和主内存之间cache的访问情况.</p>
+          <h4 id="xx-usecondcardmark">1. -XX:-UseCondCardMark</h4>
+          <p><code>sudo perf stat -ecycles,instructions,cache-references,cache-misses java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc  -XX:-UseCondCardMark CardTableTest 2000000000 8 5</code></p>
+          <pre><code>running times: [3668, 3820, 3527, 3623, 2456]
+          
+           Performance counter stats for &#39;java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc -XX:-UseCondCardMark CardTableTest 2000000000 8 5&#39;:
+          
+             380,627,593,591 cycles                    #    0.000 GHz
+             216,449,367,675 instructions              #    0.57  insns per cycle
+                 344,499,146 cache-references
+                 137,509,095 cache-misses              #   39.916 % of all cache refs
+          
+                17.163011340 seconds time elapsed</code></pre>
+          <h4 id="xxusecondcardmark-1">2. -XX:+UseCondCardMark</h4>
+          <p><code>sudo perf stat -ecycles,instructions,cache-references,cache-misses java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc  -XX:+UseCondCardMark CardTableTest 2000000000 8 5</code></p>
+          <pre><code>running times: [590, 574, 564, 541, 549]
+          
+           Performance counter stats for &#39;java -XX:+UseParallelGC -Xms32m -Xmx32m -server -verbose:gc -XX:+UseCondCardMark CardTableTest 2000000000 8 5&#39;:
+          
+              63,187,057,676 cycles                    #    0.000 GHz
+             219,369,504,739 instructions              #    3.47  insns per cycle
+                  10,018,646 cache-references
+                   3,616,081 cache-misses              #   36.094 % of all cache refs
+          
+                 2.884229639 seconds time elapsed</code></pre>
+          <p>instructions表示cpu执行的指令数量. 可以看到打开<code>UseCondCardMark</code>后，执行的指令数量增加了.合理，因为多了if分支判断指令消耗.</p>
+          <p>cache-references表示cpu访问cache的次数, cache-misses表示访问cache失败的次数. cpu和主内存之间存在着多级(L1,L2…LL)缓存，这里统计的是最后一级缓存(LL)的访问情况。cache-references的值太高, 说明L1 cache的miss量比较高，cpu穿透了L1 cache, 访问LLcache. cache-misses数值太高, 表示LL cache穿透。而伪共享造成的问题是导致多级缓存里的数据全都失效，因此cache-references和cache-misses的数量都会增加。上面的数据也说明了这一点。</p>
+          <h2 id="结论">结论</h2>
+          <ol type="1">
+          <li>Always use <code>-XX:+UseCondCardMark</code> in parallel garbage collector.</li>
+          <li>g1 garbage collector的实现机制避免了这个问题，使用g1测试结果如下</li>
+          </ol>
+          <pre><code>java -XX:+UseG1GC -Xms32m -Xmx32m -server -verbose:gc  CardTableTest 2000000000 8 5
+          running times: [702, 735, 839, 856, 837]</code></pre>
+          <p>PS:<br />
+          测试代码中, 有一行注释的代码 <code>long[] padding = new long[4096];</code>，这里通过填充的方式, 使得每个Worker对象位于不同的card page 中，进而使得对应的card table中的byte不会位于同一个cache line. 但是这种填充方式有时候效果明显，有时候没有任何效果，可能是由于jvm的内部的优化(重排或者无用字段丢弃)导致填充失效。</p>
+          <h2 id="references">references</h2>
+          <p><a href="https://blogs.oracle.com/dave/false-sharing-induced-by-card-table-marking" class="uri">https://blogs.oracle.com/dave/false-sharing-induced-by-card-table-marking</a></p>
+        </article>
+      </main>
     </div>
-    <!-- <div id="forkme ">
+    <!--  .row -->
+  </div>
+  <!--  .container -->
+  <footer class="bottom cp ">
+    <p>Copyright © 2018 yoje </p>
+    <!-- <div class="smilie" title="Do you know that this is just a text transformed into a smiley face by CSS ? Check the source !">:-)</div> -->
+  </footer>
+  <a href="index.html" class="return-to" id="return-to-home"><i class="fa fa-home" aria-hidden="true"></i></a>
+  <a href="#" class="return-to" id="return-to-top"><i class="fa fa-chevron-up" aria-hidden="true"></i></a>
+  <!-- <div id="forkme ">
         <a href="https://github.com/huangyoje "><img src="https://camo.githubusercontent.com/52760788cde945287fbb584134c4cbc2bc36f904/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67
                     " alt="Fork me on GitHub " data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png "></a>
     </div> -->

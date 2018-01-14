@@ -5,7 +5,7 @@ date: 2017-02-15
 
 ## what is pandoc
   [pandoc](https://github.com/jgm/pandoc) 用于将一种标记语言的文本转化为另一种标记语言格式。如将markdown转化为html, pdf等。  `pandoc` 是一个命令行工具,使用 [HasKell](https://www.haskell.org/) 语言编写。  
-  :point_right:[目前支持的可以互相转化的标记语言](http://pandoc.org/index.html)   
+  👉 [目前支持的可以互相转化的标记语言](http://pandoc.org/index.html)   
 
 ## 安装
 [https://github.com/jgm/pandoc/blob/master/INSTALL.md](https://github.com/jgm/pandoc/blob/master/INSTALL.md)

@@ -2,135 +2,114 @@
 <html  lang="zh-CN" >
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="generator" content="pandoc" />
-    <!--  author -->
-    <meta name="author" content="yoje" />
-    <!--  date -->
-    <meta name="date" content="2017-02-15" />     <!--  title -->
-    <title>pandoc 使用</title>
-    <!--  网站图标 -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="apple-touch-icon-precomposed" href="/favicon.png">
-    <!--  css -->
-        <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="pandoc" />
+  <!--  author -->
+  <meta name="author" content="yoje" />
+  <!--  date -->
+  <meta name="date" content="2017-02-15" />   <!--  title -->
+  <title>pandoc 使用</title>
+  <!--  网站图标 -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon-precomposed" href="favicon.png">
+  <!--  css -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 
 
-    <!--  js  -->
-    <script src="https://cdn.bootcss.com/jquery/3.1.1/jquery.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
-    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <!--  js  -->
+  <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="js/private.js"></script>
 
 
-    <!--[if lt IE 9]>
+  <!--[if lt IE 9]>
       <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
     <![endif]-->
 </head>
 
 <body>
-    <div class="container">
-        <header class="header ">
-            <div class="avatar ">
-                <img src="http://oscbgsllb.bkt.clouddn.com/me.jpg" class="img-circle" alt="where ma i" width="150px " height="150px ">
-                <p class="avatar-desc">boma ye</p>
-            </div>
-            <div class="menu ">
-                <div class="menu-item ">
-                    <a class="menu-item-link" href="/"><span>blog</span></a>
-                </div>
-                <div class="menu-item ">
-                    <a class="menu-item-link" href="/"><span>slide</span></a>
-                </div>
-                <div class="menu-item  ">
-                    <a class="menu-item-link" href="#"><span>tag</span></a>
-                </div>
-            </div>
-            <div class="feed ">
-                <a class="feed-link " href="# "><i class="fa fa-rss fa-2x " aria-hidden="true "></i> <span>RSS</span></a>
-            </div>
-            <div class="contact ">
-                <a class="contact-link " href="https://github.com/huangyoje"><i class="fa fa-github fa-fw" aria-hidden="true "></i> </a>
-                <a class="contact-link " href="https://plus.google.com/115454074587838046879"><i class="fa fa-google-plus" aria-hidden="true"></i> </a>
-                <a class="contact-link " href="https://twitter.com/huayoje"><i class="fa fa-twitter fa-fw" aria-hidden="true "></i> </a>
-            </div>
-        </header>
-        <main class="content " role="main ">
-            <!--  博客 -->
-            <article class="post ">
-                <!--  博客标题 -->
-                <header id="title">
-                    <h1>pandoc 使用</h1>
-                    <small>2017-02-15</small>
-                </header>
-                <!--  博客正文 -->
-                <h2 id="what-is-pandoc">what is pandoc</h2>
-                <p><a href="https://github.com/jgm/pandoc">pandoc</a> 用于将一种标记语言的文本转化为另一种标记语言格式。如将markdown转化为html, pdf等。 <code>pandoc</code> 是一个命令行工具,使用 <a href="https://www.haskell.org/">HasKell</a> 语言编写。<br />
-                👉<a href="http://pandoc.org/index.html">目前支持的可以互相转化的标记语言</a></p>
-                <h2 id="安装">安装</h2>
-                <p><a href="https://github.com/jgm/pandoc/blob/master/INSTALL.md" class="uri">https://github.com/jgm/pandoc/blob/master/INSTALL.md</a></p>
-                <h2 id="使用">使用</h2>
-                <p><code>pandoc [选项] [需要转化的文件]</code></p>
-                <h4 id="常用选项">常用选项</h4>
-                <ul>
-                <li><code>-f format</code>或<code>--from=format</code> 指定需要转化的文件格式<br />
-                </li>
-                <li><code>-t format</code>或<code>--to=format</code> 指定转化后的文件格式</li>
-                <li><code>-o filename</code>或<code>--output=filename</code> 转化后的文件名称</li>
-                <li><code>-s</code> 加上该参数，会根据默认的模版生成完整的转化后的文件，包含header, footer。</li>
-                <li><code>--template 模版文件路径</code> 指定模版文件，和 <code>-s</code> 一起使用，模版文件编写参考<a href=""></a>, 通过 <code>pandoc -D 格式</code> 可以查看某种格式默认的模版</li>
-                </ul>
-                <h4 id="需要转化的文件">需要转化的文件</h4>
-                <p>可以根据本地文件路径或url指定，可以传入多个文件，空格分开<br />
-                如果不传该参数，表示接受标准输入</p>
-                <h2 id="支持的格式">支持的格式</h2>
-                <p>markdown , html4, html5, pdf…</p>
-                <h2 id="示例">示例</h2>
-                <ol type="1">
-                <li>md to html5</li>
-                </ol>
-                <div class="sourceCode" id="cb1"><pre class="sourceCode zsh"><code class="sourceCode zsh"><a class="sourceLine" id="cb1-1" data-line-number="1">pandoc -s --template=./config/templates/default.html5 -f markdown -t html5 -o ./target/pandoc.html ./articles/pandoc.md</a></code></pre></div>
-                <ol start="2" type="1">
-                <li>字符集 pandoc 支持的字符编码为utf-8, 如果输入文件或输出文件非utf-8, 则使用 <code>iconv</code> 命令转化，如下</li>
-                </ol>
-                <div class="sourceCode" id="cb2"><pre class="sourceCode zsh"><code class="sourceCode zsh"><a class="sourceLine" id="cb2-1" data-line-number="1">iconv -t utf-8 input.txt <span class="kw">|</span> pandoc <span class="kw">|</span> iconv -f utf-8</a></code></pre></div>
-                <h2 id="进阶">进阶</h2>
-                <ol type="1">
-                <li>查看支持高亮的语言</li>
-                </ol>
-                <div class="sourceCode" id="cb3"><pre class="sourceCode zsh"><code class="sourceCode zsh"><a class="sourceLine" id="cb3-1" data-line-number="1">pandoc --list-highlight-languages</a></code></pre></div>
-                <ol start="2" type="1">
-                <li>查看支持的高亮的样式</li>
-                </ol>
-                <div class="sourceCode" id="cb4"><pre class="sourceCode zsh"><code class="sourceCode zsh"><a class="sourceLine" id="cb4-1" data-line-number="1">pandoc --list-highlight-stylesb</a></code></pre></div>
-                <ol start="3" type="1">
-                <li>选择高亮的样式</li>
-                </ol>
-                <div class="sourceCode" id="cb5"><pre class="sourceCode zsh"><code class="sourceCode zsh"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># 可选的有tango,espresso,zenburn,breezedark,haddock,monochrome,pygments(默认使用)</span></a>
-                <a class="sourceLine" id="cb5-2" data-line-number="2">pandoc --highlight-style=monochrome</a></code></pre></div>
-                <ol start="4" type="1">
-                <li>禁用高亮</li>
-                </ol>
-                <div class="sourceCode" id="cb6"><pre class="sourceCode zsh"><code class="sourceCode zsh"><a class="sourceLine" id="cb6-1" data-line-number="1">pandoc --no-highlight</a></code></pre></div>
-                <ol start="5" type="1">
-                <li>查看pandoc对markdown支持的扩展</li>
-                </ol>
-                <div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="co"># 使用某种扩展, markdown+extensionname</span></a>
-                <a class="sourceLine" id="cb7-2" data-line-number="2"><span class="co"># 禁用某种扩展, markdown-extensionname</span></a>
-                <a class="sourceLine" id="cb7-3" data-line-number="3"><span class="ex">pandoc</span> --list-extensions</a></code></pre></div>
-            </article>
-            <!-- 评论 -->
-            <article class="comment ">
-                <!-- 多说评论框 start -->
-                <div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>
-            </article>
-        </main>
-        <footer class="bottom cp ">
-            <p>Copyright © 2017 yoje </p>
-        </footer>
+  <div class="container">
+    <div class="row ">
+      <main class="col-sm-12 content " role="main ">
+        <!--  博客 -->
+        <article class="post ">
+          <!--  博客标题 -->
+          <header id="title">
+            <h1>pandoc 使用</h1>
+            <small>2017-02-15</small>
+          </header>
+          <!--  博客正文 -->
+          <h2 id="what-is-pandoc">what is pandoc</h2>
+          <p><a href="https://github.com/jgm/pandoc">pandoc</a> 用于将一种标记语言的文本转化为另一种标记语言格式。如将markdown转化为html, pdf等。 <code>pandoc</code> 是一个命令行工具,使用 <a href="https://www.haskell.org/">HasKell</a> 语言编写。<br />
+          👉 <a href="http://pandoc.org/index.html">目前支持的可以互相转化的标记语言</a></p>
+          <h2 id="安装">安装</h2>
+          <p><a href="https://github.com/jgm/pandoc/blob/master/INSTALL.md" class="uri">https://github.com/jgm/pandoc/blob/master/INSTALL.md</a></p>
+          <h2 id="使用">使用</h2>
+          <p><code>pandoc [选项] [需要转化的文件]</code></p>
+          <h4 id="常用选项">常用选项</h4>
+          <ul>
+          <li><code>-f format</code>或<code>--from=format</code> 指定需要转化的文件格式<br />
+          </li>
+          <li><code>-t format</code>或<code>--to=format</code> 指定转化后的文件格式</li>
+          <li><code>-o filename</code>或<code>--output=filename</code> 转化后的文件名称</li>
+          <li><code>-s</code> 加上该参数，会根据默认的模版生成完整的转化后的文件，包含header, footer。</li>
+          <li><code>--template 模版文件路径</code> 指定模版文件，和 <code>-s</code> 一起使用，模版文件编写参考<a href=""></a>, 通过 <code>pandoc -D 格式</code> 可以查看某种格式默认的模版</li>
+          </ul>
+          <h4 id="需要转化的文件">需要转化的文件</h4>
+          <p>可以根据本地文件路径或url指定，可以传入多个文件，空格分开<br />
+          如果不传该参数，表示接受标准输入</p>
+          <h2 id="支持的格式">支持的格式</h2>
+          <p>markdown , html4, html5, pdf…</p>
+          <h2 id="示例">示例</h2>
+          <ol type="1">
+          <li>md to html5</li>
+          </ol>
+          <div class="sourceCode" id="cb1"><pre class="sourceCode zsh"><code class="sourceCode zsh"><a class="sourceLine" id="cb1-1" data-line-number="1">pandoc -s --template=./config/templates/default.html5 -f markdown -t html5 -o ./target/pandoc.html ./articles/pandoc.md</a></code></pre></div>
+          <ol start="2" type="1">
+          <li>字符集 pandoc 支持的字符编码为utf-8, 如果输入文件或输出文件非utf-8, 则使用 <code>iconv</code> 命令转化，如下</li>
+          </ol>
+          <div class="sourceCode" id="cb2"><pre class="sourceCode zsh"><code class="sourceCode zsh"><a class="sourceLine" id="cb2-1" data-line-number="1">iconv -t utf-8 input.txt <span class="kw">|</span> pandoc <span class="kw">|</span> iconv -f utf-8</a></code></pre></div>
+          <h2 id="进阶">进阶</h2>
+          <ol type="1">
+          <li>查看支持高亮的语言</li>
+          </ol>
+          <div class="sourceCode" id="cb3"><pre class="sourceCode zsh"><code class="sourceCode zsh"><a class="sourceLine" id="cb3-1" data-line-number="1">pandoc --list-highlight-languages</a></code></pre></div>
+          <ol start="2" type="1">
+          <li>查看支持的高亮的样式</li>
+          </ol>
+          <div class="sourceCode" id="cb4"><pre class="sourceCode zsh"><code class="sourceCode zsh"><a class="sourceLine" id="cb4-1" data-line-number="1">pandoc --list-highlight-stylesb</a></code></pre></div>
+          <ol start="3" type="1">
+          <li>选择高亮的样式</li>
+          </ol>
+          <div class="sourceCode" id="cb5"><pre class="sourceCode zsh"><code class="sourceCode zsh"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># 可选的有tango,espresso,zenburn,breezedark,haddock,monochrome,pygments(默认使用)</span></a>
+          <a class="sourceLine" id="cb5-2" data-line-number="2">pandoc --highlight-style=monochrome</a></code></pre></div>
+          <ol start="4" type="1">
+          <li>禁用高亮</li>
+          </ol>
+          <div class="sourceCode" id="cb6"><pre class="sourceCode zsh"><code class="sourceCode zsh"><a class="sourceLine" id="cb6-1" data-line-number="1">pandoc --no-highlight</a></code></pre></div>
+          <ol start="5" type="1">
+          <li>查看pandoc对markdown支持的扩展</li>
+          </ol>
+          <div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="co"># 使用某种扩展, markdown+extensionname</span></a>
+          <a class="sourceLine" id="cb7-2" data-line-number="2"><span class="co"># 禁用某种扩展, markdown-extensionname</span></a>
+          <a class="sourceLine" id="cb7-3" data-line-number="3"><span class="ex">pandoc</span> --list-extensions</a></code></pre></div>
+        </article>
+      </main>
     </div>
-    <!-- <div id="forkme ">
+    <!--  .row -->
+  </div>
+  <!--  .container -->
+  <footer class="bottom cp ">
+    <p>Copyright © 2018 yoje </p>
+    <!-- <div class="smilie" title="Do you know that this is just a text transformed into a smiley face by CSS ? Check the source !">:-)</div> -->
+  </footer>
+  <a href="index.html" class="return-to" id="return-to-home"><i class="fa fa-home" aria-hidden="true"></i></a>
+  <a href="#" class="return-to" id="return-to-top"><i class="fa fa-chevron-up" aria-hidden="true"></i></a>
+  <!-- <div id="forkme ">
         <a href="https://github.com/huangyoje "><img src="https://camo.githubusercontent.com/52760788cde945287fbb584134c4cbc2bc36f904/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67
                     " alt="Fork me on GitHub " data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png "></a>
     </div> -->

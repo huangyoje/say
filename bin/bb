@@ -1,0 +1,13 @@
+#!/bin/sh
+
+filename=$1
+filename=${filename##*/}
+filename=${filename%%.*}.html
+filename=$( echo $filename | tr " " "-" )
+DIR="$( cd "$(dirname "$0")" ; pwd -P )"
+CONF=${DIR}/../config
+TARGET=${DIR}/../docs
+
+pandoc -s --template=${CONF}/templates/default.html5 --verbose --highlight-style=monochrome -f markdown -t html5 -o ${TARGET}/${filename} ${CONF}/meta.yaml "$1"
+
+echo "generate blog: ${TARGET}/${filename}"

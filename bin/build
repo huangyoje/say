@@ -1,6 +1,0 @@
-filename=$1
-filename=${filename##*/}
-filename=${filename%%.*}.html
-filename=$( echo $filename | tr " " "-" )
-DIR="$( cd "$(dirname "$0")" ; pwd -P )"
-pandoc -s --template=${DIR}/../config/templates/default.html5  --highlight-style=monochrome ${DIR}/../config/meta.yaml -f markdown+emoji -t html5 -o ${DIR}/../docs/${filename} "$1"

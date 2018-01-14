@@ -2,87 +2,66 @@
 <html $if(lang)$ lang="$lang$" $endif$>
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="generator" content="pandoc" />
-    <!--  author -->
-    <meta name="author" content="$author$" />
-    <!--  date -->
-    <meta name="date" content="$date$" /> $if(abstract)$
-    <!--  abstract -->
-    <meta name="abstract" content="$abstract$" /> $endif$
-    <!--  title -->
-    <title>$title$</title>
-    <!--  网站图标 -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="apple-touch-icon-precomposed" href="/favicon.png">
-    <!--  css -->
-    $for(css)$
-    <link rel="stylesheet" href="$css$" /> $endfor$
-    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="pandoc" />
+  <!--  author -->
+  <meta name="author" content="$author$" />
+  <!--  date -->
+  <meta name="date" content="$date$" /> $if(abstract)$
+  <!--  abstract -->
+  <meta name="abstract" content="$abstract$" /> $endif$
+  <!--  title -->
+  <title>$title$</title>
+  <!--  网站图标 -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon-precomposed" href="favicon.png">
+  <!--  css -->
+  $for(css)$
+  <link rel="stylesheet" href="$css$" /> $endfor$
+  <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 
 
-    <!--  js  -->
-    <script src="https://cdn.bootcss.com/jquery/3.1.1/jquery.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
-    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <!--  js  -->
+  <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="js/private.js"></script>
 
 
-    <!--[if lt IE 9]>
+  <!--[if lt IE 9]>
       <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
     <![endif]-->
 </head>
 
 <body>
-    <div class="container">
-        <header class="header ">
-            <div class="avatar ">
-                <img src="http://oscbgsllb.bkt.clouddn.com/me.jpg" class="img-circle" alt="where ma i" width="150px " height="150px ">
-                <p class="avatar-desc">boma ye</p>
-            </div>
-            <div class="menu ">
-                <div class="menu-item ">
-                    <a class="menu-item-link" href="/"><span>blog</span></a>
-                </div>
-                <div class="menu-item ">
-                    <a class="menu-item-link" href="/"><span>slide</span></a>
-                </div>
-                <div class="menu-item  ">
-                    <a class="menu-item-link" href="#"><span>tag</span></a>
-                </div>
-            </div>
-            <div class="feed ">
-                <a class="feed-link " href="# "><i class="fa fa-rss fa-2x " aria-hidden="true "></i> <span>RSS</span></a>
-            </div>
-            <div class="contact ">
-                <a class="contact-link " href="https://github.com/huangyoje"><i class="fa fa-github fa-fw" aria-hidden="true "></i> </a>
-                <a class="contact-link " href="https://plus.google.com/115454074587838046879"><i class="fa fa-google-plus" aria-hidden="true"></i> </a>
-                <a class="contact-link " href="https://twitter.com/huayoje"><i class="fa fa-twitter fa-fw" aria-hidden="true "></i> </a>
-            </div>
-        </header>
-        <main class="content " role="main ">
-            <!--  博客 -->
-            <article class="post ">
-                <!--  博客标题 -->
-                <header id="title">
-                    <h1>$title$</h1>
-                    <small>$date$</small>
-                </header>
-                <!--  博客正文 -->
-                $body$
-            </article>
-            <!-- 评论 -->
-            <article class="comment ">
-                <!-- 多说评论框 start -->
-                <div class="ds-thread" data-thread-key="请将此处替换成文章在你的站点中的ID" data-title="请替换成文章的标题" data-url="请替换成文章的网址"></div>
-            </article>
-        </main>
-        <footer class="bottom cp ">
-            <p>Copyright © 2017 $author$ </p>
-        </footer>
+  <div class="container">
+    <div class="row ">
+      <main class="col-sm-12 content " role="main ">
+        <!--  博客 -->
+        <article class="post ">
+          <!--  博客标题 -->
+          <header id="title">
+            <h1>$title$</h1>
+            <small>$date$</small>
+          </header>
+          <!--  博客正文 -->
+          $body$
+        </article>
+      </main>
     </div>
-    <!-- <div id="forkme ">
+    <!--  .row -->
+  </div>
+  <!--  .container -->
+  <footer class="bottom cp ">
+    <p>Copyright © 2018 $author$ </p>
+    <!-- <div class="smilie" title="Do you know that this is just a text transformed into a smiley face by CSS ? Check the source !">:-)</div> -->
+  </footer>
+  <a href="index.html" class="return-to" id="return-to-home"><i class="fa fa-home" aria-hidden="true"></i></a>
+  <a href="#" class="return-to" id="return-to-top"><i class="fa fa-chevron-up" aria-hidden="true"></i></a>
+  <!-- <div id="forkme ">
         <a href="https://github.com/huangyoje "><img src="https://camo.githubusercontent.com/52760788cde945287fbb584134c4cbc2bc36f904/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67
                     " alt="Fork me on GitHub " data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png "></a>
     </div> -->
