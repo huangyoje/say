@@ -40,6 +40,10 @@
 			font-family: Papyrus, fantasy !important;
 		}
 
+		.auto-scroll-x {
+			overflow-x: auto;
+		}
+
 		.reveal {
 			/* font-family: cursive !important; */
 			/* font-family: monaco, Consolas, "Lucida Console", monospace !important; */
@@ -57,9 +61,22 @@
 				<p style="font-family:fantasy;">Created by <a href="http://yoje.me" style="color:#e0ff17">yoje</a>&nbsp;&nbsp;<i class="em-svg em-beers" style="width:150px;height:150px;"></i></p>
 			</section>
 			<section>
+				<h2 style="color:coral">warning</h2>
+				<p>The slides comes from personal learning.</p>
+				<p>Everything may be wrong. </p>
+				<p>Feel free to correct me.</p>
+			</section>
+			<section>
+				<h2>warm up</h2>
+				<img data-src="http://yoje-blog-image.test.upcdn.net/allocator-collector.jpg" alt="gc overview" style="max-width:40%;max-height:40%"><br>
+				<div class="fragment fade-up">
+					<p>collector  VS  allocator</p>
+				</div>
+			</section>
+			<section>
 				<h2>基本概念</h2>
 				<ul>
-					<li>并行<br>&nbsp;&nbsp;&nbsp;&nbsp;多个gc线程同时工作</li>
+					<li>并行</br>&nbsp;&nbsp;&nbsp;&nbsp;多个gc线程同时工作</li>
 					<li>并发<br>&nbsp;&nbsp;&nbsp;&nbsp;gc线程和应用线程同时工作</li>
 					<li>mutator<br>&nbsp;&nbsp;&nbsp;&nbsp;应用线程</li>
 					<li>collector<br>&nbsp;&nbsp;&nbsp;&nbsp;gc线程</li>
@@ -67,11 +84,20 @@
 			</section>
 			<section>
 				<h2>gc overview</h2>
-				<img data-src="http://oscbgsllb.bkt.clouddn.com/gc-overview.png" alt="gc overview" style="max-width:80%;max-height:80%"><br>
+				<img data-src="http://yoje-blog-image.test.upcdn.net/gc-overview.png" alt="gc overview" style="max-width:80%;max-height:80%"><br>
 				<ul>
 					<li>红色: mutator暂停</li>
 					<li>绿色: mutator和collector并发执行</li>
 				</ul>
+			</section>
+			<section>
+				<h2>gc overview</h2>
+				<div>
+					<span>分代&nbsp;</span>
+					<span class="fragment fade-up"><i class="em em-arrow_right"></i>&nbsp;并行&nbsp;</span>
+					<span class="fragment fade-up"><i class="em em-arrow_right"></i>&nbsp;并发标记&nbsp;</span>
+					<span class="fragment fade-up"><i class="em em-arrow_right"></i>&nbsp;并发移动</span>
+				</div>
 			</section>
 			<section>
 				<section>
@@ -110,15 +136,23 @@ public class LRUCache {
 				</section>
 				<section>
 					<h2>generational issues</h2>
-					<img data-src="http://oscbgsllb.bkt.clouddn.com/gen-gc-1.png" alt="gen gc" style="max-width:50%;max-height:50%">
+					<img data-src="http://yoje-blog-image.test.upcdn.net/gen-gc-1.png" alt="gen gc" style="max-width:50%;max-height:50%">
 					<p>How to collect young generation safely and quickly ?</p>
 				</section>
 				<section>
 					<h2>generational issues</h2>
-					<img data-src="http://oscbgsllb.bkt.clouddn.com/gen-gc-2-card-table.png" alt="" style="max-width:50%;max-height:50%">
+					<ul>
+						<li>write barrier</li>
+						<li>remember set(card table)</li>
+					</ul>
+					<img class="fragment fade-up" data-src="http://yoje-blog-image.test.upcdn.net/card-table.png" alt="gen gc" style="max-width:90%;max-height:90%">
 				</section>
 				<section>
-					<h2>card table marking overhead</h2>
+					<h2>generational issues</h2>
+					<img data-src="http://yoje-blog-image.test.upcdn.net/gen-gc-2-card-table.png" alt="" style="max-width:50%;max-height:50%">
+				</section>
+				<section>
+					<h2>marking overhead</h2>
 					<ul>
 						<li class="fragment fade-up">write barrier<br>additional instructions</li>
 						<li class="fragment fade-up">false sharing<br><a href="https://blogs.oracle.com/dave/false-sharing-induced-by-card-table-marking">https://blogs.oracle.com/dave/false-sharing-induced-by-card-table-marking</a></li>
@@ -195,7 +229,7 @@ public class LRUCache {
 				<section>
 					<h3>card table false sharing</h3>
 					<p>
-						<pre>java -Xms6g -Xmx8g -verbose:gc CardTableTest 2000000000 16 5</pre>
+						<pre>java -Xms6g -Xmx8g -server -XX:+UseParallelGC -verbose:gc CardTableTest 2000000000 16 5</pre>
 						<p><pre>[3476, 3747, 3656, 3640, 3624]</pre></p><br>
 						<p></p>
 						<i class="em-svg em-confused" style="width:100px;height:100px;"></i>
@@ -205,7 +239,7 @@ public class LRUCache {
 					<h2>card table false sharing</h2>
 					<p>-XX:+UseCondCardMark</p>
 					<p>
-						<pre>java -Xms6g -Xmx8g -server -XX:+UseCondCardMark -verbose:gc CardTableTest 2000000000 16 5</pre>
+						<pre>java -Xms6g -Xmx8g -server -XX:+UseParallelGC -XX:+UseCondCardMark -verbose:gc CardTableTest 2000000000 16 5</pre>
 						<p><pre>[539, 501, 482, 413, 524]</pre></p><br>
 					</p>
 				</section>
@@ -217,64 +251,64 @@ public class LRUCache {
 				</section>
 				<section>
 					<h3>card table false sharing</h3>
-					<table class="reveal" style="font-size:0.7em">
-						<thead>
-							<th></th>
-							<th>ParallelScavenge</th>
-							<th>padding</th>
-							<th>UseCondCardMark</th>
-							<th>G1</th>
-						</thead>
-						<tbody>
-							<tr>
-								<td>cycles</td>
-								<td>763,664,255,859</td>
-								<td>79,799,832,270</td>
-								<td>92,135,045,608</td>
-								<td>127,719,248,924</td>
-							</tr>
-							<tr>
-								<td>instructions</td>
-								<td>227,677,199,912</td>
-								<td>208,604,788,208</td>
-								<td>233,643,352,329</td>
-								<td>330,058,457,870</td>
-							</tr>
-							<tr>
-								<td>cache-references</td>
-								<td>362,191,392	</td>
-								<td>13,970,648</td>
-								<td>15,576,723</td>
-								<td>30,994,044</td>
-							</tr>
-							<tr>
-								<td>cache-misses</td>
-								<td>116,709,511</td>
-								<td>5,500,759</td>
-								<td>6,369,317</td>
-								<td>14,993,870</td>
-							</tr>
-							<tr>
-								<td>time(s)</td>
-								<td>18.283154995</td>
-								<td>2.495778141</td>
-								<td>2.980141927</td>
-								<td>3.930423917</td>
-							</tr>
-						</tbody>
-					</table>
-				</section>
-				<section>
-					<h2>card table marking overhead</h2>
-					<ul>
-						<li>@See <br><a href="http://yoje.me/UseCondCardMark.html">http://yoje.me/UseCondCardMark.html</a></li>
+					<div class="false-share-table" style="overflow: auto">
+						<table class="reveal" style="font-size:0.7em">
+							<thead>
+								<th></th>
+								<th>ParallelScavenge</th>
+								<th>padding</th>
+								<th>UseCondCardMark</th>
+								<th>G1</th>
+							</thead>
+							<tbody>
+								<tr>
+									<td>cycles</td>
+									<td>763,664,255,859</td>
+									<td>79,799,832,270</td>
+									<td>92,135,045,608</td>
+									<td>127,719,248,924</td>
+								</tr>
+								<tr>
+									<td>instructions</td>
+									<td>227,677,199,912</td>
+									<td>208,604,788,208</td>
+									<td>233,643,352,329</td>
+									<td>330,058,457,870</td>
+								</tr>
+								<tr>
+									<td>cache-references</td>
+									<td>362,191,392	</td>
+									<td>13,970,648</td>
+									<td>15,576,723</td>
+									<td>30,994,044</td>
+								</tr>
+								<tr>
+									<td>cache-misses</td>
+									<td>116,709,511</td>
+									<td>5,500,759</td>
+									<td>6,369,317</td>
+									<td>14,993,870</td>
+								</tr>
+								<tr>
+									<td>time(s)</td>
+									<td>18.283154995</td>
+									<td>2.495778141</td>
+									<td>2.980141927</td>
+									<td>3.930423917</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<ul style="margin-top:30px; float:left">
+						<li>cache-references<br>indicates Last Level Cache accesses</li>
+						<li>cache-misses<br>indicates Last Level Cache misses</li>
 					</ul>
 				</section>
 			</section>
 			<section>
 				<section>
 					<h2>concurrent mark issues</h2>
-					<img data-src="http://oscbgsllb.bkt.clouddn.com/3-color-mark-1.png" alt="" style="max-width:30%;max-height:30%">
+					<img data-src="http://yoje-blog-image.test.upcdn.net/3-color-mark-1.png" alt="" style="max-width:30%;max-height:30%">
 					<br>
 					<p>某一时刻的对象图</p>
 					<p>使用3色标记法进行标记活对象</p>
@@ -283,26 +317,26 @@ public class LRUCache {
 					<h2>concurrent mark issues</h2>
 					<p>Three-Color Abstraction</p>
 					<ul>
-						<li>White: not ye visited</li>
+						<li>White: not yet visited</li>
 						<li>Gray: visited, but references are not scanned yet</li>
 						<li>Black: visited, and fully scanned</li>
 					</ul>
 				</section>
 				<section>
 					<h2>concurrent mark issues</h2>
-					<img data-src="http://oscbgsllb.bkt.clouddn.com/3-color-mark-2.png" alt="" style="max-width:30%;max-height:30%">
+					<img data-src="http://yoje-blog-image.test.upcdn.net/3-color-mark-2.png" alt="" style="max-width:30%;max-height:30%">
 				</section>
 				<section>
 					<h2>concurrent mark issues</h2>
-					<img data-src="http://oscbgsllb.bkt.clouddn.com/3-color-mark-3.png" alt="" style="max-width:30%;max-height:30%">
+					<img data-src="http://yoje-blog-image.test.upcdn.net/3-color-mark-3.png" alt="" style="max-width:30%;max-height:30%">
 				</section>
 				<section>
 					<h2>concurrent mark issues</h2>
-					<img data-src="http://oscbgsllb.bkt.clouddn.com/3-color-mark-4.png" alt="" style="max-width:30%;max-height:30%">
+					<img data-src="http://yoje-blog-image.test.upcdn.net/3-color-mark-4.png" alt="" style="max-width:30%;max-height:30%">
 				</section>
 				<section>
 					<h2>concurrent mark issues</h2>
-					<img data-src="http://oscbgsllb.bkt.clouddn.com/3-color-mark-5.png" alt="" style="max-width:30%;max-height:30%">
+					<img data-src="http://yoje-blog-image.test.upcdn.net/3-color-mark-5.png" alt="" style="max-width:30%;max-height:30%">
 					<br>
 					<ul>
 						<li>一个并发的mutator线程创建新对象H, 并且让A对象引用H</li>
@@ -312,7 +346,7 @@ public class LRUCache {
 				</section>
 				<section>
 					<h2>concurrent mark issues</h2>
-					<img data-src="http://oscbgsllb.bkt.clouddn.com/3-color-mark-6.png" alt="" style="max-width:30%;max-height:30%">
+					<img data-src="http://yoje-blog-image.test.upcdn.net/3-color-mark-6.png" alt="" style="max-width:30%;max-height:30%">
 					<br>
 					<ul>
 						<li>H, G其实是活对象, 但标记结束之后却是白色, 被gc掉</li>
@@ -323,7 +357,7 @@ public class LRUCache {
 			<section>
 				<section>
 					<h2>g1 gc</h2>
-					<p>regionalized</p>
+					<p>region based</p>
 					<p>soft pause time</p>
 					<p>5% footprint overhead</p>
 
@@ -331,7 +365,7 @@ public class LRUCache {
 				</section>
 				<section>
 					<h3>memory layout</h3>
-					<img data-src="http://oscbgsllb.bkt.clouddn.com/memory-layout.png" alt="region layout">
+					<img data-src="http://yoje-blog-image.test.upcdn.net/memory-layout.png" alt="region layout">
 					<br>
 					<ul>
 						<li>-XX:G1HeapRegionSize=nm</li>
@@ -358,21 +392,6 @@ survivors: 11 regions, old: 56 regions
 					<p style="margin-top:-20px;color:greenyellow">通过动态调整CSet的大小控制暂停时间</p>
 				</section>
 				<section>
-					<h3>concurrent mark</h3>
-					<ul>
-						<li>目的:<br>
-							<p>找出old generation中可以被回收的region</p>
-						</li>
-						<li>什么时候执行<br>
-							<p>一次ygc之后, 堆内存的占用超过阈值</p>
-						</li>
-						<li>可以被回收<br>
-							<p>垃圾超过某个阈值的region</p>
-						</li>
-						<li>标记结束后, 开始一个mixed gc周期(多次mixed gc)</li>
-					</ul>
-				</section>
-				<section>
 					<h3>RSet(remember set)</h3>
 					<p>在部分垃圾回收器中(如分代垃圾回收器), RSet是用于维护非收集部分对收集部分的引用的数据结构. 避免全堆扫描.</p>
 					<p>G1 会维护:</p>
@@ -383,11 +402,11 @@ survivors: 11 regions, old: 56 regions
 				</section>
 				<section>
 					<h3>RSet(remember set)</h3>
-					<img data-src="http://oscbgsllb.bkt.clouddn.com/g1-rset-1.png" alt="" style="max-width:30%;max-height:30%">
+					<img data-src="http://yoje-blog-image.test.upcdn.net/g1-rset-1.png" alt="" style="max-width:80%;max-height:80%">
 				</section>
 				<section>
 					<h2>RSet(remember set)</h2>
-					<img data-src="http://oscbgsllb.bkt.clouddn.com/g1-rset-2.png" alt="" style="max-width:30%;max-height:30%">
+					<img data-src="http://yoje-blog-image.test.upcdn.net/g1-rset-2.png" alt="" style="max-width:80%;max-height:80%">
 				</section>
 				<section>
 					<h3>post write barrier</h3>
@@ -445,12 +464,27 @@ void oop_field_store(oop* field, oop new_value) {
 					查看RSet 统计信息: 粒度, G1ConcRefinementThread线程处理的数量, mutator线程处理的数量, coarsenings, RSet处理时间.
 				</section>
 				<section>
-					<h3>SATB(snapshot-at-the-beginning)</h3>
-					<img data-src="http://oscbgsllb.bkt.clouddn.com/3-color-mark-5.png" alt="" style="max-width:30%;max-height:30%">
+					<h3>concurrent mark</h3>
+					<ul>
+						<li>目的:<br>
+							<p>找出old generation中可以被回收的region</p>
+						</li>
+						<li>什么时候执行<br>
+							<p>一次ygc之后, 堆内存的占用超过阈值</p>
+						</li>
+						<li>可以被回收<br>
+							<p>垃圾超过某个阈值的region</p>
+						</li>
+						<li>标记结束后, 开始一个mixed gc周期(多次mixed gc)</li>
+					</ul>
 				</section>
 				<section>
 					<h3>SATB(snapshot-at-the-beginning)</h3>
-					<img data-src="http://oscbgsllb.bkt.clouddn.com/3-color-mark-satb-7.png" alt="" style="max-width:30%;max-height:30%">
+					<img data-src="http://yoje-blog-image.test.upcdn.net/3-color-mark-5.png" alt="" style="max-width:80%;max-height:80%">
+				</section>
+				<section>
+					<h3>SATB(snapshot-at-the-beginning)</h3>
+					<img data-src="http://yoje-blog-image.test.upcdn.net/3-color-mark-satb-7.png" alt="" style="max-width:80%;max-height:80%">
 					<br>
 					<ul>
 						<li>color all new object black</li>
@@ -459,26 +493,26 @@ void oop_field_store(oop* field, oop new_value) {
 				</section>
 				<section>
 					<h3>SATB(snapshot-at-the-beginning)</h3>
-					<img data-src="http://oscbgsllb.bkt.clouddn.com/3-color-mark-satb-8.png" alt="" style="max-width:30%;max-height:30%">
+					<img data-src="http://yoje-blog-image.test.upcdn.net/3-color-mark-satb-8.png" alt="" style="max-width:80%;max-height:80%">
 					<br>
 					<p>Everything is ok</p>
 				</section>
 				<section>
 					<h3>SATB(snapshot-at-the-beginning)</h3>
-					<img data-src="http://oscbgsllb.bkt.clouddn.com/satb-mark-1.png" alt="" style="max-width:30%;max-height:30%;">
+					<img data-src="http://yoje-blog-image.test.upcdn.net/satb-mark-1.png" alt="" style="max-width:40%;max-height:40%;">
 					<div style="font-size:0.8em;">
 						<ul>
 							<li>top是当前region的分配指针</li>
 							<li>[bottom, top)是当前该region已用的部分</li>
 							<li>[top, end)当前region的可分配空间</li>
 							<li>[bottom, PTAMS)是上一轮concurrent mark进行标记的空间, 对象存活信息存储在previous bitmap中</li>
-							<li>[PTAMS, top)是上一轮concurrent mark结束后, 到当前时刻新分配的对象</li>
+							<li>[PTAMS, top)是上一轮concurrent mark开始后, 到当前时刻新分配的对象</li>
 						</ul>
 					</div>
 				</section>
 				<section>
 					<h3>SATB(snapshot-at-the-beginning)</h3>
-					<img data-src="http://oscbgsllb.bkt.clouddn.com/satb-mark-2.png" alt="" style="max-width:30%;max-height:30%">
+					<img data-src="http://yoje-blog-image.test.upcdn.net/satb-mark-2.png" alt="" style="max-width:30%;max-height:30%">
 					<br>
 					<ul>
 						<li>开始本轮标记, 设置NTAMS=top </li>
@@ -488,7 +522,7 @@ void oop_field_store(oop* field, oop new_value) {
 				</section>
 				<section>
 					<h3>SATB(snapshot-at-the-beginning)</h3>
-					<img data-src="http://oscbgsllb.bkt.clouddn.com/satb-mark-3.png" alt="" style="max-width:30%;max-height:30%">
+					<img data-src="http://yoje-blog-image.test.upcdn.net/satb-mark-3.png" alt="" style="max-width:30%;max-height:30%">
 					<br>
 					<ul>
 						<li>标记过程中,mutator也在并发运行,新分配的对象位于[NTAMS,top)</li>
@@ -508,12 +542,12 @@ void oop_field_store(oop* field, oop new_value) {
 				</section>
 				<section>
 					<h3>SATB(snapshot-at-the-beginning)</h3>
-					<img data-src="http://oscbgsllb.bkt.clouddn.com/satb-mark-4.png" alt="" style="max-width:30%;max-height:30%">
+					<img data-src="http://yoje-blog-image.test.upcdn.net/satb-mark-4.png" alt="" style="max-width:30%;max-height:30%">
 					<br>
 				</section>
 				<section>
 					<h3>SATB(snapshot-at-the-beginning)</h3>
-					<img data-src="http://oscbgsllb.bkt.clouddn.com/satb-mark-5.png" alt="" style="max-width:30%;max-height:30%">
+					<img data-src="http://yoje-blog-image.test.upcdn.net/satb-mark-5.png" alt="" style="max-width:30%;max-height:30%">
 					<br>
 				</section>
 				<section>
@@ -536,7 +570,7 @@ void oop_field_store(oop* field, oop new_value) {
 			<section>
 				<section>
 					<h2>g1 gc humongous</h2>
-					<img data-src="http://oscbgsllb.bkt.clouddn.com/humongous.png" alt="region layout">
+					<img data-src="http://yoje-blog-image.test.upcdn.net/humongous.png" alt="region layout">
 				</section>
 				<section>
 					<h2>g1 gc humongous</h2>
@@ -549,7 +583,7 @@ void oop_field_store(oop* field, oop new_value) {
 				<section>
 					<h2>g1 gc humongous</h2>
 					<p>查找大对象</p>
-					<a href="http://gitlab.corp.qunar.com/yongjie.huang/awesome_atpco/blob/master/btrace/BigArraySize.java">http://gitlab.corp.qunar.com/yongjie.huang/awesome_atpco/blob/master/btrace/BigArraySize.java</a>
+					<p class="fragment fade-up">btrace</p>
 				</section>
 			</section>
 			<section>
@@ -701,7 +735,7 @@ static void reserveMemory(long size, int cap) {
 				</section>
 				<section>
 					<h2>System.gc()</h2>
-					<img data-src="http://oscbgsllb.bkt.clouddn.com/direct-buffer-1.png" alt="" style="max-width:30%;max-height:30%">
+					<img data-src="http://yoje-blog-image.test.upcdn.net/direct-buffer-1.png" alt="" style="max-width:30%;max-height:30%">
 					<br>
 					<ul>
 						<li>申请两个direct buffer 对象</li>
@@ -711,7 +745,7 @@ static void reserveMemory(long size, int cap) {
 				</section>
 				<section>
 					<h2>System.gc()</h2>
-					<img data-src="http://oscbgsllb.bkt.clouddn.com/direct-buffer-2.png" alt="" style="max-width:30%;max-height:30%">
+					<img data-src="http://yoje-blog-image.test.upcdn.net/direct-buffer-2.png" alt="" style="max-width:30%;max-height:30%">
 					<br>
 					<p>before gc</p>
 					<ul>
@@ -721,7 +755,7 @@ static void reserveMemory(long size, int cap) {
 				</section>
 				<section>
 					<h2>System.gc()</h2>
-					<img data-src="http://oscbgsllb.bkt.clouddn.com/direct-buffer-3.png" alt="" style="max-width:30%;max-height:30%">
+					<img data-src="http://yoje-blog-image.test.upcdn.net/direct-buffer-3.png" alt="" style="max-width:30%;max-height:30%">
 					<br>
 					<p>after gc</p>
 					<ul>
@@ -731,24 +765,23 @@ static void reserveMemory(long size, int cap) {
 				</section>
 				<section>
 					<h2>System.gc()</h2>
-					<img data-src="http://oscbgsllb.bkt.clouddn.com/direct-buffer-4.png" alt="" style="max-width:30%;max-height:30%">
-					<ul style="font-size:0.8em;">
+					<img data-src="http://yoje-blog-image.test.upcdn.net/direct-buffer-4.png" alt="" style="max-width:30%;max-height:30%">
+					<ul style="font-size:0.8em;" class="">
 						<li>
-							<p>经过一段时间后,对象B死亡 </p>
+							一段时间后,对象B死亡
 						</li>
 						<li>
-							<p>但是基于弱分代假设,old generation gc 频率非常低</p>
+							但是基于弱分代假设,old generation gc 频率非常低
 						</li>
 						<li>
-							<p>因此对象B不能被
+							因此对象B不能被
 								<font color="red">及时recycle</font>
-							</p>
 						</li>
 						<li>
-							<p>背后关联的native memory也无法及时释放</p>
+							关联的native memory也无法及时释放
 						</li>
 						<li>
-							<p>如果old generation 有很多对象B.-> Direct buffer OOM.</p>
+							<p>如果old generation有很多对象B.-> Direct buffer OOM.</p>
 						</li>
 					</ul>
 				</section>
@@ -782,8 +815,10 @@ static void reserveMemory(long size, int cap) {
 						<li>从jdk7开始, Permanent Generation逐步被移除, 但是依然存在,并且所有的garbage collector都在使用</li>
 						<li>jdk8引入Metaspace</li>
 					</ul>
+				</section>
+				<section>
 					<ul>
-						<li>The required size of permgen was hard to predict. It resulted in either under-provisioning triggering java.lang.OutOfMemoryError: Permgen size errors or over-provisioning resulting in wasted resources.</li>
+						<li><q>The required size of permgen was hard to predict. It resulted in either under-provisioning triggering java.lang.OutOfMemoryError: Permgen size errors or over-provisioning resulting in wasted resources.</q></li>
 						<li>GC performance improvements, enabling concurrent class data de-allocation without GC pauses and specific iterators on metadata</li>
 						<li>Support for further optimizations such as G1 concurrent class unloading</li>
 					</ul>
@@ -832,24 +867,18 @@ static void reserveMemory(long size, int cap) {
 				</section>
 				<section>
 					<h2>jdk7 vs jdk8</h2>
-					<a href="https://blogs.oracle.com/poonam/about-g1-garbage-collector%2c-permanent-generation-and-metaspace">https://blogs.oracle.com/poonam/about-g1-garbage-collector%2c-permanent-generation-and-metaspace</a>
+					<div class="auto-scroll-x">
+						<a href="https://blogs.oracle.com/poonam/about-g1-garbage-collector%2c-permanent-generation-and-metaspace">https://blogs.oracle.com/poonam/about-g1-garbage-collector%2c-permanent-generation-and-metaspace</a>
+					</div>
 				</section>
 				<section>
-					<a href="http://openjdk.java.net/groups/hotspot/docs/StorageManagement.html">http://openjdk.java.net/groups/hotspot/docs/StorageManagement.html</a>
+					<h2>reading</h2>
+					<div class="auto-scroll-x">
+						<a href="http://openjdk.java.net/groups/hotspot/docs/StorageManagement.html">http://openjdk.java.net/groups/hotspot/docs/StorageManagement.html</a>
+						<a href="https://blog.golang.org/ismmkeynote">https://blog.golang.org/ismmkeynote</a>
+					</div>
 				</section>
 			</section>
-			<!-- <section>
-				<h2>Export to PDF</h2>
-				<p>Presentations can be <a href="https://github.com/hakimel/reveal.js#pdf-export">exported to PDF</a>, here's an example:</p>
-				<iframe data-src="https://www.slideshare.net/slideshow/embed_code/42840540" width="445" height="355" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:3px solid #666; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe>
-			</section>
-
-			<section style="text-align: left;">
-				<h1>THE END</h1>
-				<p>
-					- <a href="http://slides.com">Try the online editor</a> <br> - <a href="https://github.com/hakimel/reveal.js">Source code &amp; documentation</a>
-				</p>
-			</section> -->
 		</div>
 	</div>
 	<script src="https://cdn.bootcss.com/reveal.js/3.6.0/lib/js/head.min.js"></script>
@@ -862,13 +891,13 @@ static void reserveMemory(long size, int cap) {
 			history: true,
 			center: true,
 
-			transition: 'fade', // none/fade/slide/convex/concave/zoom
+			transition: 'convex', // none/fade/slide/convex/concave/zoom
 
 			width: 960,
 			height: 700,
 
 			// Factor of the display size that should remain empty around the content
-			margin: 0.1,
+			margin: 0.01,
 
 			// Bounds for smallest/largest possible scale to apply to content
 			minScale: 0.2,
