@@ -8,19 +8,20 @@ date: 2019-01-13
 使用jdbc访问mysql时, 如何处理`date, time, datetime, timestamp` 类型? 其中涉及的时区如何转换?
 
 # Learning
-## `ResultSet`
+## ResultSet
 jdbc 规范定义了接口`ResultSet` 用于访问数据. 其中, 对于时间类型的数据, 提供了`java.sql.Date getDate(int columnIndex), java.sql.Time getTime(int columnIndex), java.sql.Timestamp getTimestamp(int columnIndex)` 三个方法.  而对于时间类型的数据, mysql server 返回给mysql client的格式是`2017-02-15 10:32:15`.
 
 那么如何将`2017-02-15 10:32:15`这种格式转换成`java.sql.Date,java.sql.Time,java.sql.Timestamp`?
 
-## `java.sql.*`
+## java.sql.*
+
 `java.sql.Date,java.sql.Time,java.sql.Timestamp` 都是`java.util.Date` 的子类, 而`java.util.Date` 表示的是一个精度为毫秒的时间戳.
 
 因此这里的问题是如何将`2017-02-15 10:32:15` 转换成时间戳? 答案是需要一个时区, 只有将`2017-02-15 10:32:15` 放到某个具体的时区下, 才能表示一个绝对时间, 才可以得到对应的时间戳.
 
 因此问题变成了正确的时区是什么? 以及如何确保使用正确的时区?
 
-## `TimeZone`
+## TimeZone
 这里涉及的时区有: mysql server的时区, mysql client(也就是当前应用)的时区, 当前connection的时区.
 
 对于 `datetime` 类型, 由于mysql server返回的数据和时区无关, 因此这里mysql client可以转换为自己想要的时区.
@@ -85,5 +86,7 @@ jdbc 规范定义了接口`ResultSet` 用于访问数据. 其中, 对于时间�
 
 # References
 [https://stackoverflow.com/questions/3323618/handling-mysql-datetimes-and-timestamps-in-java](https://stackoverflow.com/questions/3323618/handling-mysql-datetimes-and-timestamps-in-java)
+
 [https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-properties-changed.html](https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-properties-changed.html)
+
 [https://dev.mysql.com/doc/relnotes/connector-j/6.0/en/news-6-0-3.html](https://dev.mysql.com/doc/relnotes/connector-j/6.0/en/news-6-0-3.html)

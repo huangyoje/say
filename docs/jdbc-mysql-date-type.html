@@ -46,14 +46,14 @@
           <h1 id="question">Question</h1>
           <p>使用jdbc访问mysql时, 如何处理<code>date, time, datetime, timestamp</code> 类型? 其中涉及的时区如何转换?</p>
           <h1 id="learning">Learning</h1>
-          <h2 id="resultset"><code>ResultSet</code></h2>
+          <h2 id="resultset">ResultSet</h2>
           <p>jdbc 规范定义了接口<code>ResultSet</code> 用于访问数据. 其中, 对于时间类型的数据, 提供了<code>java.sql.Date getDate(int columnIndex), java.sql.Time getTime(int columnIndex), java.sql.Timestamp getTimestamp(int columnIndex)</code> 三个方法. 而对于时间类型的数据, mysql server 返回给mysql client的格式是<code>2017-02-15 10:32:15</code>.</p>
           <p>那么如何将<code>2017-02-15 10:32:15</code>这种格式转换成<code>java.sql.Date,java.sql.Time,java.sql.Timestamp</code>?</p>
-          <h2 id="java.sql."><code>java.sql.*</code></h2>
+          <h2 id="java.sql.">java.sql.*</h2>
           <p><code>java.sql.Date,java.sql.Time,java.sql.Timestamp</code> 都是<code>java.util.Date</code> 的子类, 而<code>java.util.Date</code> 表示的是一个精度为毫秒的时间戳.</p>
           <p>因此这里的问题是如何将<code>2017-02-15 10:32:15</code> 转换成时间戳? 答案是需要一个时区, 只有将<code>2017-02-15 10:32:15</code> 放到某个具体的时区下, 才能表示一个绝对时间, 才可以得到对应的时间戳.</p>
           <p>因此问题变成了正确的时区是什么? 以及如何确保使用正确的时区?</p>
-          <h2 id="timezone"><code>TimeZone</code></h2>
+          <h2 id="timezone">TimeZone</h2>
           <p>这里涉及的时区有: mysql server的时区, mysql client(也就是当前应用)的时区, 当前connection的时区.</p>
           <p>对于 <code>datetime</code> 类型, 由于mysql server返回的数据和时区无关, 因此这里mysql client可以转换为自己想要的时区.</p>
           <p>而对于 <code>timestamp</code> 类型, 正确的时区是 <strong>当前connection的时区</strong>, 因为mysql server返回的是将utc转换为当前connection时区之后的数据.</p>
@@ -93,7 +93,9 @@
           <p>对于<code>version 5.x</code>, 配置 <code>useLegacyDatetimeCode=false&amp;serverTimeZoneTz=timezone</code></p>
           <p>对于<code>version 6.x, 8.x</code>, 配置 <code>serverTimeZoneTz=timezone</code></p>
           <h1 id="references">References</h1>
-          <p><a href="https://stackoverflow.com/questions/3323618/handling-mysql-datetimes-and-timestamps-in-java">https://stackoverflow.com/questions/3323618/handling-mysql-datetimes-and-timestamps-in-java</a> <a href="https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-properties-changed.html">https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-properties-changed.html</a> <a href="https://dev.mysql.com/doc/relnotes/connector-j/6.0/en/news-6-0-3.html">https://dev.mysql.com/doc/relnotes/connector-j/6.0/en/news-6-0-3.html</a></p>
+          <p><a href="https://stackoverflow.com/questions/3323618/handling-mysql-datetimes-and-timestamps-in-java">https://stackoverflow.com/questions/3323618/handling-mysql-datetimes-and-timestamps-in-java</a></p>
+          <p><a href="https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-properties-changed.html">https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-properties-changed.html</a></p>
+          <p><a href="https://dev.mysql.com/doc/relnotes/connector-j/6.0/en/news-6-0-3.html">https://dev.mysql.com/doc/relnotes/connector-j/6.0/en/news-6-0-3.html</a></p>
         </article>
       </main>
     </div>
