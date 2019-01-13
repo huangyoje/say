@@ -81,11 +81,8 @@ function getBlogContent(blog_$) {
 // 根据日期排序
 function sortItems(items) {
   items.sort(function(item1, item2) {
-    if (item1.date === item2.date) {
-      return 0;
-    }
     // 逆序
-    return item1.date < item2.date;
+    return item1.date < item2.date ? 1 : (item1.date >item2.date ? -1 : 0)
   })
 }
 
