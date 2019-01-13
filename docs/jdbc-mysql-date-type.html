@@ -1,0 +1,116 @@
+<!doctype html>
+<html  lang="zh-CN" >
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="pandoc" />
+  <!--  author -->
+  <meta name="author" content="yoje" />
+  <!--  date -->
+  <meta name="date" content="2019-01-13" />   <!--  title -->
+  <title>jdbc-mysql-date-type</title>
+  <!--  网站图标 -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon-precomposed" href="favicon.png">
+  <!--  css -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+
+
+  <!--  js  -->
+  <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="js/private.js"></script>
+
+
+  <!--[if lt IE 9]>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+  <div class="container">
+    <div class="row ">
+      <main class="col-sm-12 content " role="main ">
+        <!--  博客 -->
+        <article class="post ">
+          <!--  博客标题 -->
+          <header id="title">
+            <h1>jdbc-mysql-date-type</h1>
+            <small>2019-01-13</small>
+          </header>
+          <!--  博客正文 -->
+          <h1 id="question">Question</h1>
+          <p>使用jdbc访问mysql时, 如何处理<code>date, time, datetime, timestamp</code> 类型? 其中涉及的时区如何转换?</p>
+          <h1 id="learning">Learning</h1>
+          <h2 id="resultset"><code>ResultSet</code></h2>
+          <p>jdbc 规范定义了接口<code>ResultSet</code> 用于访问数据. 其中, 对于时间类型的数据, 提供了<code>java.sql.Date getDate(int columnIndex), java.sql.Time getTime(int columnIndex), java.sql.Timestamp getTimestamp(int columnIndex)</code> 三个方法. 而对于时间类型的数据, mysql server 返回给mysql client的格式是<code>2017-02-15 10:32:15</code>.</p>
+          <p>那么如何将<code>2017-02-15 10:32:15</code>这种格式转换成<code>java.sql.Date,java.sql.Time,java.sql.Timestamp</code>?</p>
+          <h2 id="java.sql."><code>java.sql.*</code></h2>
+          <p><code>java.sql.Date,java.sql.Time,java.sql.Timestamp</code> 都是<code>java.util.Date</code> 的子类, 而<code>java.util.Date</code> 表示的是一个精度为毫秒的时间戳.</p>
+          <p>因此这里的问题是如何将<code>2017-02-15 10:32:15</code> 转换成时间戳? 答案是需要一个时区, 只有将<code>2017-02-15 10:32:15</code> 放到某个具体的时区下, 才能表示一个绝对时间, 才可以得到对应的时间戳.</p>
+          <p>因此问题变成了正确的时区是什么? 以及如何确保使用正确的时区?</p>
+          <h2 id="timezone"><code>TimeZone</code></h2>
+          <p>这里涉及的时区有: mysql server的时区, mysql client(也就是当前应用)的时区, 当前connection的时区.</p>
+          <p>对于 <code>datetime</code> 类型, 由于mysql server返回的数据和时区无关, 因此这里mysql client可以转换为自己想要的时区.</p>
+          <p>而对于 <code>timestamp</code> 类型, 正确的时区是 <strong>当前connection的时区</strong>, 因为mysql server返回的是将utc转换为当前connection时区之后的数据.</p>
+          <p>那么对于我们常用的jdbc实现库, <code>mysql-connector-java</code>: 1. 当前connection的时区是哪个? 2. 如何修改当前connection的时区? 3. 对于<code>timestamp</code> 类型的数据, 是使用哪个时区转换为<code>java.sql.TimeStamp</code>?</p>
+          <h2 id="mysql-connector-java">mysql-connector-java</h2>
+          <ol type="1">
+          <li>当前connection的时区默认使用mysql server 配置的时区, 即<code>show variables like 'time_zone'</code>的值.</li>
+          <li>可以在jdbc url连接参数中通过<code>sessionVariables=time_zone='+09:00'</code> 配置connection的时区.</li>
+          <li>转换<code>timestamp</code> 类型的数据时, 使用的时区取决于具体的版本和配置. 具体如下</li>
+          </ol>
+          <h3 id="version-6.x-8.x">version 6.x, 8.x</h3>
+          <p>转换<code>timestamp</code> 类型的数据时, 使用当前connection的时区. 因此转换之后的数据是正确的.</p>
+          <p>由于mysql 和java 中时区的规范不兼容, 可能出现 1. java不认识mysql server配置的时区 2. java将mysql server中配置的时区解析错误</p>
+          <p>因此, 可以使用如下参数, 用符合java规范且等价于mysql server配置的时区值, 告诉<code>mysql-connector-java</code> 正确的时区信息 &gt; serverTimezone<br />
+          Override detection/mapping of time zone. Used when time zone from server doesn’t map to Java time zone</p>
+          <p><strong>需要注意的案例</strong></p>
+          <p>部署在中国标准时区(GMT+8:00)的mysql server, 默认的时区值是<code>CST</code>, 而<code>CST</code> 对应多个时区, 在mysql server中, CST=中国标准时区(China Standard Time. GMT+8:00), 而在java(1.8)中, CST=美国中央时区(Central Standard Time. GMT-6:00), 因此读取的<code>timestamp</code>数据会和实际时间差14个小时. <strong>解决方案是通过在jdbc url中添加参数serverTimeZoneTz=GMT%2b8:00</strong>, 这样在java中得到的时区就是正确的.</p>
+          <p>推荐版本:6.0.3(低于这个版本的解析日期时间时存在bug).</p>
+          <h3 id="version-5.x">version 5.X</h3>
+          <p>5.x版本提供两种方式, 通过配置<code>useLegacyDatetimeCode=true/false</code> 决定使用哪一种方式. 默认为true.</p>
+          <ol type="1">
+          <li><p><code>useLegacyDatetimeCode=false</code></p>
+          <p>不使用遗留的日期时间代码. 处理方式和6.x, 8.x的相同.</p>
+          <p>推荐版本version: 5.1.39+(低于这个版本的解析日期时间时存在bug).</p></li>
+          <li><p><code>useLegacyDatetimeCode=true</code></p>
+          <p>使用遗留的日期时间代码.</p>
+          <p>具体的行为是， 不管当前connection的时区是什么, 对于<code>timestamp</code> 类型的数据, 总是使用java应用的默认时区<code>TimeZone.getDefault()</code> 转换成<code>java.sql.TimeStamp</code> 对象.</p>
+          <p>如果java应用的默认时区和当前connection的时区不一致时, 这种转换会导致错误的数据. 因此, 这种使用方式应该避免.</p></li>
+          </ol>
+          <h1 id="conclusion">Conclusion</h1>
+          <ol type="1">
+          <li>和时区有关的数据使用<code>timestamp</code>类型存储</li>
+          <li><code>timestamp</code> 类型在mysql server端存储的是对应的utc数据, 查询时, 首先会转换为当前connection的时区,然后返回</li>
+          <li>mysql client拿到<code>timestamp</code> 类型的数据时, 必须通过当前connection的时区, 转换成对应的<code>java.sql.TimeStamp</code> 对象.</li>
+          </ol>
+          <p>因此正确的使用方式:</p>
+          <p>对于<code>version 5.x</code>, 配置 <code>useLegacyDatetimeCode=false&amp;serverTimeZoneTz=timezone</code></p>
+          <p>对于<code>version 6.x, 8.x</code>, 配置 <code>serverTimeZoneTz=timezone</code></p>
+          <h1 id="references">References</h1>
+          <p><a href="https://stackoverflow.com/questions/3323618/handling-mysql-datetimes-and-timestamps-in-java">https://stackoverflow.com/questions/3323618/handling-mysql-datetimes-and-timestamps-in-java</a> <a href="https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-properties-changed.html">https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-properties-changed.html</a> <a href="https://dev.mysql.com/doc/relnotes/connector-j/6.0/en/news-6-0-3.html">https://dev.mysql.com/doc/relnotes/connector-j/6.0/en/news-6-0-3.html</a></p>
+        </article>
+      </main>
+    </div>
+    <!--  .row -->
+  </div>
+  <!--  .container -->
+  <footer class="bottom cp ">
+    <p>Copyright © 2018 yoje </p>
+    <!-- <div class="smilie" title="Do you know that this is just a text transformed into a smiley face by CSS ? Check the source !">:-)</div> -->
+  </footer>
+  <a href="http://yoje.me" class="return-to" id="return-to-home"><i class="fa fa-home" aria-hidden="true"></i></a>
+  <a href="#" class="return-to" id="return-to-top"><i class="fa fa-chevron-up" aria-hidden="true"></i></a>
+  <!-- <div id="forkme ">
+        <a href="https://github.com/huangyoje "><img src="https://camo.githubusercontent.com/52760788cde945287fbb584134c4cbc2bc36f904/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67
+                    " alt="Fork me on GitHub " data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png "></a>
+    </div> -->
+
+</body>
+
+</html>

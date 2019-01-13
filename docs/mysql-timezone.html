@@ -1,0 +1,82 @@
+<!doctype html>
+<html  lang="zh-CN" >
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="pandoc" />
+  <!--  author -->
+  <meta name="author" content="yoje" />
+  <!--  date -->
+  <meta name="date" content="2019-01-11" />   <!--  title -->
+  <title>mysql-timezone</title>
+  <!--  网站图标 -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon-precomposed" href="favicon.png">
+  <!--  css -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+
+
+  <!--  js  -->
+  <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="js/private.js"></script>
+
+
+  <!--[if lt IE 9]>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+  <div class="container">
+    <div class="row ">
+      <main class="col-sm-12 content " role="main ">
+        <!--  博客 -->
+        <article class="post ">
+          <!--  博客标题 -->
+          <header id="title">
+            <h1>mysql-timezone</h1>
+            <small>2019-01-11</small>
+          </header>
+          <!--  博客正文 -->
+          <p>mysql 在处理和时区有关的数据时, 需要获取当前connection的时区信息</p>
+          <h1 id="connection-time-zone">connection time zone</h1>
+          <blockquote>
+          <p>Per-connection time zones. Each client that connects has its own time zone setting, given by the session time_zone variable. Initially, the session variable takes its value from the global time_zone variable</p>
+          </blockquote>
+          <p>每个connection可以通过命令<code>SET time_zone = timezone</code>设置自己的时区.可以通过<code>show variables like '%time_zone%'</code>查看当前connection时区.</p>
+          <p>如果当前connection没有显示设置时区, 则使用<code>global time zone</code>作为自己的时区.</p>
+          <h1 id="global-time-zone">global time zone</h1>
+          <blockquote>
+          <p>The server’s current time zone. The global time_zone system variable indicates the time zone the server currently is operating in. The initial value for time_zone is ‘SYSTEM’, which indicates that the server time zone is the same as the system time zone.</p>
+          </blockquote>
+          <blockquote>
+          <p>The initial global server time zone value can be specified explicitly at startup with the <code>--default-time-zone=timezone</code> option on the command line, or you can use the following line in an option file<code>default-time-zone='timezone'</code>.</p>
+          </blockquote>
+          <p>global time zone的初始值是<code>SYSTEM</code>, 也就是mysql server运行所在的系统时区. 启动前可以通过配置文件或命令行修改. 启动后可以通过<code>SET GLOBAL time_zone = timezone</code> 修改.</p>
+          <h1 id="references">References</h1>
+          <p><a href="https://dev.mysql.com/doc/refman/8.0/en/time-zone-support.html">https://dev.mysql.com/doc/refman/8.0/en/time-zone-support.html</a></p>
+        </article>
+      </main>
+    </div>
+    <!--  .row -->
+  </div>
+  <!--  .container -->
+  <footer class="bottom cp ">
+    <p>Copyright © 2018 yoje </p>
+    <!-- <div class="smilie" title="Do you know that this is just a text transformed into a smiley face by CSS ? Check the source !">:-)</div> -->
+  </footer>
+  <a href="http://yoje.me" class="return-to" id="return-to-home"><i class="fa fa-home" aria-hidden="true"></i></a>
+  <a href="#" class="return-to" id="return-to-top"><i class="fa fa-chevron-up" aria-hidden="true"></i></a>
+  <!-- <div id="forkme ">
+        <a href="https://github.com/huangyoje "><img src="https://camo.githubusercontent.com/52760788cde945287fbb584134c4cbc2bc36f904/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67
+                    " alt="Fork me on GitHub " data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png "></a>
+    </div> -->
+
+</body>
+
+</html>
