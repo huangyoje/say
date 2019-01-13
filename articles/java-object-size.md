@@ -7,7 +7,7 @@ date: 2018-01-01
 
 [https://stackoverflow.com/questions/7750140/whats-the-difference-between-a-word-and-byte](https://stackoverflow.com/questions/7750140/whats-the-difference-between-a-word-and-byte)
 
-## 声明
+## 环境
 
 基于HotSpot jdk 1.8.0_131. 64位. Darwin Kernel Version 16.7.0.
 使用 [JOL](http://openjdk.java.net/projects/code-tools/jol/) 查看对象在内存中的大小及布局.
