@@ -168,7 +168,7 @@ mysql server 写入`timestamp` 类型的数据时, 首先将时间从当前conne
 在得出结论之前, 首先必须达成一致, `create_time, update_time` 是绝对时间, 需要时区信息. 因此, 结论如下
 1. `create_time, update_time` 应该使用`timestamp` 类型.
    使用`datetime`类型是一种技术错误, 只不过在特定的情况下(server和client时区一致), 这个错误没有影响.
-2. `datetime` 字段的数据应该由mysql client主动写入, 避免在mysql server端通过`DEFAULT CURRENT_TIMESTAMP`等方式自动更新.
+2. `datetime` 字段的数据最好由mysql client主动写入, 避免在mysql server端通过`DEFAULT CURRENT_TIMESTAMP`等方式自动更新.
    因为自动更新时, 会使用当前connection的时区, 而这个字段不应该存储和时区有关的数据.
 
 # References

@@ -42,7 +42,7 @@ jdbc 规范定义了接口`ResultSet` 用于访问数据. 其中, 对于时间�
 ### version 6.x, 8.x
 转换`timestamp` 类型的数据时, 使用当前connection的时区. 因此转换之后的数据是正确的.
 
-由于mysql 和java 中时区的规范不兼容, 可能出现
+由于mysql 和java 中时区规范不兼容, 可能出现
 1. java不认识mysql server配置的时区
 2. java将mysql server中配置的时区解析错误
 
@@ -52,7 +52,7 @@ jdbc 规范定义了接口`ResultSet` 用于访问数据. 其中, 对于时间�
 
 **需要注意的案例**
 
-部署在中国标准时区(GMT+8:00)的mysql server, 默认的时区值是`CST`, 而`CST` 对应多个时区, 在mysql server中, CST=中国标准时区(China Standard Time. GMT+8:00), 而在java(1.8)中, CST=美国中央时区(Central Standard Time. GMT-6:00), 因此读取的`timestamp`数据会和实际时间差14个小时. **解决方案是通过在jdbc url中添加参数serverTimeZoneTz=GMT%2b8:00**, 这样在java中得到的时区就是正确的.
+部署在中国标准时区(GMT+8:00)的mysql server, 默认的时区值是`CST`, 而`CST` 对应多个时区, 在mysql server中, CST=中国标准时区(China Standard Time. GMT+8:00), 而在java(1.8)中, CST=美国中央时区(Central Standard Time. GMT-6:00), 因此读取的`timestamp`数据会和实际时间差14个小时. **解决方案是通过在jdbc url中添加参数serverTimeZone=GMT%2b8:00**, 这样在java中得到的时区就是正确的.
 
 推荐版本:6.0.3(低于这个版本的解析日期时间时存在bug).
 
@@ -80,9 +80,9 @@ jdbc 规范定义了接口`ResultSet` 用于访问数据. 其中, 对于时间�
 
 因此正确的使用方式:
 
-  对于`version 5.x`, 配置 `useLegacyDatetimeCode=false&serverTimeZoneTz=timezone`
+  对于`version 5.x`, 配置 `useLegacyDatetimeCode=false&serverTimeZone=timezone`
 
-  对于`version 6.x, 8.x`, 配置 `serverTimeZoneTz=timezone`
+  对于`version 6.x, 8.x`, 配置 `serverTimeZone=timezone`
 
 # References
 [https://stackoverflow.com/questions/3323618/handling-mysql-datetimes-and-timestamps-in-java](https://stackoverflow.com/questions/3323618/handling-mysql-datetimes-and-timestamps-in-java)
