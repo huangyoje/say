@@ -23,7 +23,7 @@ mysql server 写入`timestamp` 类型的数据时, 首先将时间从当前conne
 **由于一般情况下, mysql server 和mysql client 部署在同一个时区, 因此这个区别被隐藏起来, 我们混用`datetime`和`timestamp`这两种类型也没有问题.** 而当server和client部署在不同的时区时, 则要慎重对待这个区别.
 
 #### proof
-接下来用代码演示一下第二点区别.
+接下来用代码演示第二点区别.
 
 编码之前还有一个地方需要了解: 对于`timestamp` 类型, 在server 和client 之间传输的格式是`2017-02-15 10:32:15` 这种字符串, 时区是当前connection的时区.
 
@@ -173,5 +173,7 @@ mysql server 写入`timestamp` 类型的数据时, 首先将时间从当前conne
 
 # References
 [https://dev.mysql.com/doc/refman/8.0/en/datetime.html](https://dev.mysql.com/doc/refman/8.0/en/datetime.html)
+
 [https://jira.mariadb.org/browse/CONJ-433](https://jira.mariadb.org/browse/CONJ-433)
+
 [https://stackoverflow.com/questions/409286/should-i-use-the-datetime-or-timestamp-data-type-in-mysql](https://stackoverflow.com/questions/409286/should-i-use-the-datetime-or-timestamp-data-type-in-mysql)

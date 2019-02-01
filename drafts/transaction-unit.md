@@ -1,4 +1,0 @@
-
-
-test applicationcontext
-ut中的transactionTemplate 和非ut中是不是同一个bean
