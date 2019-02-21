@@ -1,0 +1,98 @@
+<!doctype html>
+<html  lang="zh-CN" >
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="pandoc" />
+  <!--  author -->
+  <meta name="author" content="yoje" />
+  <!--  date -->
+  <meta name="date" content="2019-02-21" />   <!--  title -->
+  <title>volatile-with-happen-before</title>
+  <!--  网站图标 -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon-precomposed" href="favicon.png">
+  <!--  css -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+
+
+  <!--  js  -->
+  <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="js/private.js"></script>
+
+
+  <!--[if lt IE 9]>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+  <div class="container">
+    <div class="row ">
+      <main class="col-sm-12 content " role="main ">
+        <!--  博客 -->
+        <article class="post ">
+          <!--  博客标题 -->
+          <header id="title">
+            <h1>volatile-with-happen-before</h1>
+            <small>2019-02-21</small>
+          </header>
+          <!--  博客正文 -->
+          <h1 id="什么是happen-before-order">什么是happen before order?</h1>
+          <p>If one action happens-before another, then the first is visible to and ordered before the second. 如果操作A happen before 操作B, 则操作A对操作B是可见的. 记作 hb(操作A, 操作B). 这里的可见是说操作A对内存的修改, 对操作B是可见的, 即操作B可以读到最新的值.</p>
+          <h1 id="happen-before-一致性">happen before 一致性</h1>
+          <p>HB consistency: every read can see either the latest write in the happens-before order. 读操作和写操作满足happen before 顺序时, 读操作可以读到最新的值.</p>
+          <p>举栗1: 初始 A = 0;</p>
+          <pre class="text"><code>time:     ________t1___________t2______________
+                           |     |      |          |
+          thread 1:        |A=1; |      |          |
+                           |     |      |          |
+          thread 2:        |     |      |readA = A |</code></pre>
+          <p>如果hb(写A, 读A)不成立, 则在t2时刻, thread 2 读数据时可能读到旧值, 即readA可能是0,可能是1. 如果hb(写A, 读A)成立, 则在t2时刻, thread 2 读数据时肯定读最新值, 即readA永远是1.</p>
+          <h1 id="volatile">volatile</h1>
+          <p>java 内存模型赋予了volatile关键字两大功能: 1. hb(写volatile, 读volatile): A write to a volatile field happens-before every subsequent read of that same field. 回到栗子1, 如果我们用volatile修饰A, 则readA永远是1.</p>
+          <ol start="2" type="1">
+          <li>禁止重排序: 使用volatile修饰的变量, 禁止与其临近的代码重排序. 举栗2: 如下代码 A = 1; B = 2; C = 3; 经编译器优化后, 上面三行代码可能会有6种执行顺序. 其中之一可能是C = 3;B = 2; A = 1; 但是, 如果使用volatile修饰C. 则C=3禁止与上面 两行代码重排序, 所以只可能有2种执行顺序:
+          <ol type="1">
+          <li>A = 1; B = 2; C = 3;</li>
+          <li>B = 2; A = 1; C = 3;</li>
+          </ol></li>
+          </ol>
+          <h1 id="进阶">进阶</h1>
+          <ol type="1">
+          <li>java 内存模型规定happen before满足传递性: if hb(操作A, 操作B) and (操作B, 操作C) then hb(操作A,操作C);</li>
+          <li>java 内存模型定义了一组happen before 关系.其中之一是: 单个线程中代码的执行顺序满足happen before关系, 即如果线程按顺序执行 A=1;B=2, 则hb(A=1, B=2);</li>
+          </ol>
+          <p>举栗3: 初始 A = 0, B = 0, volatile C = 0;</p>
+          <pre class="text"><code>time:     ________t1________________t2___________________________
+                           |                 |
+          thread 1:        |A=1; B=2; C=3;   |
+          thread 2:        |                 |readC=C; readB=B; readA=A;</code></pre>
+          <p>t1时刻, thread 1执行代码A=1; B=2; C=3; t2时刻, thread 2执行代码readC=C; readB=B; readA=A;</p>
+          <p>根据volatile的功能1: 由于hb(C=3, readC=C), 因此肯定可以读到C的最新值, 即readC=3;</p>
+          <p>根据进阶中的1和2: 由于hb([A=1;B=2], C=3), 且hb(C=3, readC=C), 所以 hb([A=1;B=2], readC=C); 又由于hb(readC=C, [readB=B; readA=A]), 所以 hb([A=1;B=2], [readB=B; readA=A]), 所以thread 2也读到了A,B的最新值.</p>
+        </article>
+      </main>
+    </div>
+    <!--  .row -->
+  </div>
+  <!--  .container -->
+  <footer class="bottom cp ">
+    <p>Copyright © 2018 yoje </p>
+    <!-- <div class="smilie" title="Do you know that this is just a text transformed into a smiley face by CSS ? Check the source !">:-)</div> -->
+  </footer>
+  <a href="http://yoje.me" class="return-to" id="return-to-home"><i class="fa fa-home" aria-hidden="true"></i></a>
+  <a href="#" class="return-to" id="return-to-top"><i class="fa fa-chevron-up" aria-hidden="true"></i></a>
+  <!-- <div id="forkme ">
+        <a href="https://github.com/huangyoje "><img src="https://camo.githubusercontent.com/52760788cde945287fbb584134c4cbc2bc36f904/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67
+                    " alt="Fork me on GitHub " data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png "></a>
+    </div> -->
+
+</body>
+
+</html>
