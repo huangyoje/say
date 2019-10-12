@@ -44,9 +44,40 @@
 
   隔离性是数据一致性和并发度的trade off.
 
+* 并发问题与锁
+  - dirty read:
+  - non-repeated read: record lock
+  - phatom read: record lock && Gap lock
+
+* 隔离级别与锁
+  - RC: record lock
+  - RR: record lock && Gap 锁
+  - READ UNCOMMITTED:
+  - SERIALIZABLE
+
+* about phatom read?
+  accourding to [https://en.wikipedia.org/wiki/Isolation_(database_systems)](https://en.wikipedia.org/wiki/Isolation_(database_systems)), The RR level has Phantoms problem, but for mysql, there are two kind of reads(snapshot read, current read). for current read, it's true, for snaphost read, it is false, becase snapshot always read the snapshot created at the start, so there is no Phatoms.
+
+  * the advantage of mulitversion concurrenty control?
+   [https://vladmihalcea.com/how-does-mvcc-multi-version-concurrency-control-work/](https://vladmihalcea.com/how-does-mvcc-multi-version-concurrency-control-work/)
+   [https://dev.mysql.com/doc/refman/8.0/en/innodb-multi-versioning.html](https://dev.mysql.com/doc/refman/8.0/en/innodb-multi-versioning.html)
+
+   为了实现consistent read, 减少不必要的 read/write contention.
+
+* mysql 更新聚簇索引, 二级索引
+  - Records in a clustered index are updated in-place, and their hidden system columns point undo log entries from which earlier versions of records can be reconstructed.
+  - Unlike clustered index records, secondary index records do not contain hidden system columns nor are they updated in-place
+
+  When a secondary index column is updated, old secondary index records are delete-marked, new records are inserted, and delete-marked records are eventually purged.
+
+* 自增锁与binlog
+
+* mysql 半一致读
+
 * 使用b+ 树做索引的好处
 
 * 记录锁到底锁什么? 聚簇索引还是二级索引，没有二级索引怎么办?
+
 
  - 查询条件有索引
  - 查询条件无索引

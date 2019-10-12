@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="zh">
+
+<head>
+	<meta charset="utf-8">
+	<title>byte-buddy-learnig</title>
+	<meta name="description" content="byte-buddy">
+	<meta name="author" content="yoje">
+	<meta name="date" content="2018-01-01" />
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<!-- <link rel="stylesheet" href="../css/reveal.css"> -->
+	<link href="https://cdn.bootcss.com/reveal.js/3.6.0/css/reveal.min.css" rel="stylesheet">
+	<!-- <link rel="stylesheet" href="../css/theme/black.css" id="theme"> -->
+	<link href="https://cdn.bootcss.com/reveal.js/3.6.0/css/theme/night.min.css" rel="stylesheet">
+	<!-- Theme used for syntax highlighting of code -->
+	<!-- <link rel="stylesheet" href="../lib/css/zenburn.css"> -->
+	<link href="https://cdn.bootcss.com/reveal.js/3.6.0/lib/css/zenburn.min.css" rel="stylesheet">
+	<!-- <link href="https://cdn.bootcss.com/reveal.js/3.6.0/css/print/paper.min.css" rel="stylesheet"> -->
+	<!-- Printing and PDF exports -->
+	<script>
+		var link = document.createElement('link');
+		link.rel = 'stylesheet';
+		link.type = 'text/css';
+		link.href = window.location.search.match(/print-pdf/gi) ? 'https://cdn.bootcss.com/reveal.js/3.6.0/css/print/pdf.min.css' : 'https://cdn.bootcss.com/reveal.js/3.6.0/css/print/paper.min.css';
+		document.getElementsByTagName('head')[0].appendChild(link);
+	</script>
+
+	<style>
+		h1,
+		h2,
+		h3,
+		h4,
+		h5,
+		h6 {
+			text-transform: none !important;
+			font-family: Papyrus, fantasy !important;
+		}
+
+		.auto-scroll-x {
+			overflow-x: auto;
+		}
+
+		.reveal {
+			/* font-family: cursive !important; */
+			/* font-family: monaco, Consolas, "Lucida Console", monospace !important; */
+			/* font-family: Consolas, monaco, monospace !important; */
+			font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace !important;
+		}
+	</style>
+</head>
+<body>
+	<div class="reveal">
+		<div class="slides ">
+
+<section data-markdown>
+	<textarea data-template>
+		#### how to monitor execution time of a method?
+
+		```java
+		T o = com.fasterxml.jackson.databind.ObjectMapper#readValue(byte[] src, Class<T> valueType);
+		List<E> list = org.apache.ibatis.executor.resultset.DefaultResultSetHandler#handleResultSets(Statement stmt);
+		```
+	</textarea>
+</section>
+
+		<section data-markdown>
+		  <textarea data-template>
+				#### what is bytebuddy
+				Runtime code generation for the Java virtual machine.
+			</textarea>
+		</section>
+
+		<section data-markdown>
+		  <textarea data-template>
+				####  code generation
+				## compile time
+				[JSR 269: Pluggable Annotation Processing API](https://www.jcp.org/en/jsr/detail?id=269)
+				- lombok
+			</textarea>
+		</section>
+
+		<section data-markdown>
+		  <textarea data-template>
+				#### runtime
+				** bytecode manipulation **
+				- java proxy: `java.lang.reflect.Proxy`
+				- asm
+				- cglib
+				- Javassist
+				- bytebuddy
+			</textarea>
+		</section>
+		<section data-markdown>
+		  <textarea data-template>
+				#### bytecode manipulation
+				- add
+				- delete
+				- replace
+			</textarea>
+		</section>
+
+		<section data-markdown>
+		  <textarea data-template>
+				#### bytebuddy
+				- subclass
+				- rebase
+				- redefine
+			</textarea>
+		</section>
+
+		<section data-markdown>
+		  <textarea data-template>
+				```java
+				String toString = new ByteBuddy()
+				                      .subclass(Object.class)
+				                      .name("com.yoje.bytebuddy.slides.SubclassDemo")
+				                      .method(named("toString")).intercept(FixedValue.value("Hello World!"))
+				                      .make()
+				                      .load(Subclass.class.getClassLoader())
+				                      .getLoaded()
+				                      .newInstance()
+				                      .toString();
+
+
+				```
+			</textarea>
+		</section>
+
+		<section data-markdown>
+		  <textarea data-template>
+				#### method intercept
+				- fixed value
+				- deletation
+				- methodcall
+			</textarea>
+		</section>
+
+    </div>
+  </div>
+  <script src="https://cdn.bootcss.com/reveal.js/3.6.0/lib/js/head.min.js"></script>
+	<script src="https://cdn.bootcss.com/reveal.js/3.6.0/js/reveal.min.js"></script>
+	<script>
+		// More info https://github.com/hakimel/reveal.js#configuration
+		Reveal.initialize({
+			controls: true,
+			progress: true,
+			history: true,
+			center: true,
+
+			transition: 'convex', // none/fade/slide/convex/concave/zoom
+
+			width: 960,
+			height: 700,
+
+			// Factor of the display size that should remain empty around the content
+			margin: 0.01,
+
+			// Bounds for smallest/largest possible scale to apply to content
+			minScale: 0.2,
+			maxScale: 1.5,
+			// More info https://github.com/hakimel/reveal.js#dependencies
+			dependencies: [{
+					src: 'https://cdn.bootcss.com/reveal.js/3.5.0/lib/js/classList.js',
+					condition: function() {
+						return !document.body.classList;
+					}
+				},
+				{
+					src: 'https://cdn.bootcss.com/reveal.js/3.5.0/plugin/markdown/marked.js',
+					condition: function() {
+						return !!document.querySelector('[data-markdown]');
+					}
+				},
+				{
+					src: 'https://cdn.bootcss.com/reveal.js/3.5.0/plugin/markdown/markdown.js',
+					condition: function() {
+						return !!document.querySelector('[data-markdown]');
+					}
+				},
+				{
+					src: 'https://cdn.bootcss.com/reveal.js/3.5.0/plugin/highlight/highlight.js',
+					async: true,
+					callback: function() {
+						hljs.initHighlightingOnLoad();
+					}
+				},
+				{
+					src: 'https://cdn.bootcss.com/reveal.js/3.5.0/plugin/zoom-js/zoom.min.js',
+					async: true
+				},
+				{
+					src: 'https://cdn.bootcss.com/reveal.js/3.5.0/plugin/notes/notes.min.js',
+					async: true
+				}
+			]
+		});
+	</script>
+</body>
+</html>
