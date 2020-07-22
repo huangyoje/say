@@ -32,7 +32,7 @@
 * 意向锁的作用
   mysql 支持同时表级锁和记录锁。 如果一个事物需要获取表级锁时，需要判断当前没有其他事物拥有记录锁，如何判断？
 
-  根据意向锁判断。任何事物获取记录锁之前，先要获取意向锁。因此需要获取表级锁的事物，只需要判断没有其他事物拥有意向锁接口(比判断其他事物没有拥有记录锁容易)。
+  根据意向锁判断。任何事物获取记录锁之前，先要获取意向锁。因此需要获取表级锁的事物，只需要判断没有其他事物拥有意向锁即可(比判断其他事物没有拥有记录锁容易)。
 
 * 如何理解锁，事物的四个属性
 
@@ -69,6 +69,9 @@
   - Unlike clustered index records, secondary index records do not contain hidden system columns nor are they updated in-place
 
   When a secondary index column is updated, old secondary index records are delete-marked, new records are inserted, and delete-marked records are eventually purged.
+
+* 如何实现唯一约束
+  gap locking:  There is a unique key constraint on a column and we are doing an insert. Mysql has to make sure that the lock it takes is sufficient to prevent another concurrent insert from adding a record with the same key.
 
 * 自增锁与binlog
 
