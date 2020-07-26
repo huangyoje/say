@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="zh">
+<head>
+	<meta charset="utf-8">
+	<title>innodb physical structure</title>
+	<meta name="author" content="yoje">
+	<meta name="date" content="2020-07-26" />
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<link href="https://cdn.bootcss.com/reveal.js/3.6.0/css/reveal.min.css" rel="stylesheet">
+	<link href="https://cdn.bootcss.com/reveal.js/3.6.0/css/theme/night.min.css" rel="stylesheet">
+	<link href="https://cdn.bootcss.com/reveal.js/3.6.0/lib/css/zenburn.min.css" rel="stylesheet">
+	<!-- Printing and PDF exports -->
+	<script>
+		var link = document.createElement('link');
+		link.rel = 'stylesheet';
+		link.type = 'text/css';
+		link.href = window.location.search.match(/print-pdf/gi) ? 'https://cdn.bootcss.com/reveal.js/3.6.0/css/print/pdf.min.css' : 'https://cdn.bootcss.com/reveal.js/3.6.0/css/print/paper.min.css';
+		document.getElementsByTagName('head')[0].appendChild(link);
+	</script>
+	<link href="https://afeld.github.io/emoji-css/emoji.css" rel="stylesheet">
+	<style>
+		h1,
+		h2,
+		h3,
+		h4,
+		h5,
+		h6 {
+			text-transform: none !important;
+			font-family: Papyrus, fantasy !important;
+		}
+
+		.auto-scroll-x {
+			overflow-x: auto;
+		}
+
+		.reveal {
+			/* font-family: cursive !important; */
+			/* font-family: monaco, Consolas, "Lucida Console", monospace !important; */
+			font-family: Consolas, monaco, monospace !important;
+			/* font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace !important; */
+		}
+	</style>
+</head>
+
+<body>
+	<div class="reveal">
+		<div class="slides ">
+			<section>
+				<h2>innodb physical structure</h2>
+				<p style="font-family:fantasy;">Created by <a href="http://yoje.me" style="color:#e0ff17">yoje</a>&nbsp;&nbsp;<i class="em-svg em-beers" style="width:150px;height:150px;"></i></p>
+			</section>
+			<section>
+				<h2 style="color:coral">warning</h2>
+				<p>The slides comes from personal learning.</p>
+				<p>Everything may be wrong. </p>
+				<p>Feel free to correct me.</p>
+			</section>
+      <section>
+        <h2>Everything is an index in InnoDB</h2>
+      </section>
+      <section>
+        <h2>Everything is an index in InnoDB</h2>
+      </section>
+		</div>
+	</div>
+	<script src="https://cdn.bootcss.com/reveal.js/3.6.0/lib/js/head.min.js"></script>
+	<script src="https://cdn.bootcss.com/reveal.js/3.6.0/js/reveal.min.js"></script>
+	<script>
+		// More info https://github.com/hakimel/reveal.js#configuration
+		Reveal.initialize({
+			controls: true,
+			progress: true,
+			history: true,
+			center: true,
+			transition: 'convex', // none/fade/slide/convex/concave/zoom
+			width: 960,
+			height: 700,
+			// Factor of the display size that should remain empty around the content
+			margin: 0.01,
+			// Bounds for smallest/largest possible scale to apply to content
+			minScale: 0.2,
+			maxScale: 1.5,
+			// More info https://github.com/hakimel/reveal.js#dependencies
+			dependencies: [{
+					src: 'https://cdn.bootcss.com/reveal.js/3.5.0/lib/js/classList.js',
+					condition: function() {
+						return !document.body.classList;
+					}
+				},
+				{
+					src: 'https://cdn.bootcss.com/reveal.js/3.5.0/plugin/markdown/marked.js',
+					condition: function() {
+						return !!document.querySelector('[data-markdown]');
+					}
+				},
+				{
+					src: 'https://cdn.bootcss.com/reveal.js/3.5.0/plugin/markdown/markdown.js',
+					condition: function() {
+						return !!document.querySelector('[data-markdown]');
+					}
+				},
+				{
+					src: 'https://cdn.bootcss.com/reveal.js/3.5.0/plugin/highlight/highlight.js',
+					async: true,
+					callback: function() {
+						hljs.initHighlightingOnLoad();
+					}
+				},
+				{
+					src: 'https://cdn.bootcss.com/reveal.js/3.5.0/plugin/zoom-js/zoom.min.js',
+					async: true
+				},
+				{
+					src: 'https://cdn.bootcss.com/reveal.js/3.5.0/plugin/notes/notes.min.js',
+					async: true
+				}
+			]
+		});
+	</script>
+</body>
+
+</html>
